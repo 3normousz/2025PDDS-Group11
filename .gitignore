@@ -1,0 +1,64 @@
+# Python byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage
+.coverage
+.coverage.*
+.cache
+htmlcov/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+
+# Flask and environment files
+instance/
+.webassets-cache
+.env
+.flaskenv
+.env.*
+
+# SQLite database files
+*.sqlite3
+*.sqlite
+*.db
+*.db-journal
+*.sqlite-journal
+
+# Logs
+*.log
+
+# IDEs and editors
+.vscode/
+.idea/
+*.iml
+
+# OS-specific
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Node
+node_modules/
+
+# Compiled extensions
+*.so
+*.dylib
+*.pyd

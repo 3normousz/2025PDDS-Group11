@@ -1,0 +1,17 @@
+{
+  "name": "2025pdds-group11",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tailwind-build":"npx tailwindcss -i ./static/src/input.css -o ./static/output.css --watch --config D:/projects/2025PDDS-Group11/tailwind.config.js",
+    "tailwind:watch": "npx @tailwindcss/cli -i ./static/src/input.css -o ./static/src/output.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.17",
+    "tailwindcss": "^4.1.17"
+  }
+}
