@@ -1,5 +1,18 @@
 # 2025PDDS-Group11
 
+**How to clone and push changes to this repository**
+
+I recommend using GitHub Desktop (https://desktop.github.com/download/) as it will make it easier to push (make a commit)/pull (update your code when someone else makes changes).
+
+1. You can clone the repository by clicking Step 1 and 2 as shown in the images.
+<img width="400" height="350" alt="Screenshot 2025-12-01 004507" src="https://github.com/user-attachments/assets/e271668b-55ee-4e48-8e43-17eebed61859" />
+
+2. Then type the repository name, or just directly select it if you can see the repository right ahead.
+<img width="400" height="350" alt="Screenshot 2025-11-30 231449" src="https://github.com/user-attachments/assets/9af33eba-ab9b-4201-9bae-3489b591ca5d" />
+
+3. (Optional) Now that you have cloned the repository, it's recommended to create another branch just for yourself. So that your changes won't conflict with others. You can name it however you like. (Please select "Create branch based on 'main' branch")
+<img width="400" height="350" alt="Screenshot 2025-11-30 230743" src="https://github.com/user-attachments/assets/8578a8f6-9333-4212-8a93-40c220085af3" />
+
 **How to run this thing**
 
 1. Create and activate a virtual environment
@@ -42,10 +55,11 @@ Open your browser at `http://localhost:5000`
 - `requirements.txt` - Python dependencies
 - `templates/` - HTML templates used by the web app
 - `data/` - dataset used in our project.
-* For these 2 below, you don't need to really worry about.
+
+For these 2 below, you don't need to really worry about.
 - `static/` - static assets (CSS, images, built frontend files)
 - `static/src/` - source CSS for Tailwind (`input.css`, `output.css`)
 
 **Development tips**
-- If the app fails to start, ensure that the virtual environment is activated when installing/running  (Step 1 in 'Requirements').
+- If the app fails to start, ensure that the virtual environment is activated when installing/running  (Step 1 in 'How to run this thing').
 - If you wanted to make changes, you can add a new route (on "main.py", you can refer to the existing one) and make new .html files in the "templates" folder. And I will combine every routes you guys make into 1 single dashboard
