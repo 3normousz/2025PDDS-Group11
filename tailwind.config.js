@@ -2,7 +2,8 @@
 export default {
     content: ["./templates/**/*.html", "./static/src/**/*.css"],
     theme: {
-        extend: {},
+        extend: {
+        },
     },
     plugins: [],
 };

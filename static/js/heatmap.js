@@ -1,0 +1,206 @@
+const width = 750;
+const height = 500;
+
+const svg = d3
+  .select("#worldHeatmap")
+  .append("svg")
+  .attr("width", width)
+  .attr("height", height)
+  .attr("viewBox", `0 0 ${width} ${height}`)
+  .style("width", "100%")
+  .style("height", "auto");
+
+const g = svg.append("g");
+
+// Add zoom behavior
+const zoom = d3
+  .zoom()
+  .scaleExtent([1, 8])
+  .on("zoom", (event) => {
+    g.attr("transform", event.transform);
+  });
+
+svg.call(zoom);
+
+const projection = d3
+  .geoNaturalEarth1()
+  .scale(150)
+  .translate([width / 2, height / 2]);
+
+const path = d3.geoPath().projection(projection);
+
+const colorScale = d3
+  .scaleLinear()
+  .domain([0, 15, 30, 50])
+  .range(["#fdeff9", "#ec38bc", "#7303c0", "#03001e"])
+  .clamp(true);
+
+const tooltip = d3.select("#tooltip");
+
+Promise.all([
+  d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"),
+  fetch("/api/world-heatmap").then((res) => res.json()),
+])
+  .then(([topology, violenceData]) => {
+    const countries = topojson.feature(topology, topology.objects.countries);
+
+    // Get max value for color scale
+    const maxValue = Math.max(...Object.values(violenceData));
+    const minValue = Math.min(...Object.values(violenceData));
+
+    // Update color scale domain dynamically
+    colorScale.domain([
+      minValue,
+      minValue + (maxValue - minValue) * 0.33,
+      minValue + (maxValue - minValue) * 0.66,
+      maxValue,
+    ]);
+
+    d3.select("#maxValue").text(`${maxValue.toFixed(1)}%`);
+
+    // Create a mapping from country names to ISO codes
+    const countryNameToId = {
+      "United States": "840",
+      "United Kingdom": "826",
+      France: "250",
+      Germany: "276",
+      Italy: "380",
+      Spain: "724",
+      China: "156",
+      India: "356",
+      Brazil: "076",
+      Russia: "643",
+      Canada: "124",
+      Australia: "036",
+      Japan: "392",
+      Mexico: "484",
+      "South Africa": "710",
+      Egypt: "818",
+      Nigeria: "566",
+      Kenya: "404",
+      Tanzania: "834",
+      Uganda: "800",
+      Ethiopia: "231",
+      Ghana: "288",
+      Mali: "466",
+      Senegal: "686",
+      Mozambique: "508",
+      Zambia: "894",
+      Zimbabwe: "716",
+      Malawi: "454",
+      Bangladesh: "050",
+      Pakistan: "586",
+      Philippines: "608",
+      Indonesia: "360",
+      Thailand: "764",
+      Vietnam: "704",
+      Turkey: "792",
+      Argentina: "032",
+      Colombia: "170",
+      Peru: "604",
+      Chile: "152",
+      Ecuador: "218",
+      Bolivia: "068",
+      Guatemala: "320",
+      Honduras: "340",
+      Nicaragua: "558",
+      Haiti: "332",
+      "Dominican Republic": "214",
+      Jordan: "400",
+      Yemen: "887",
+      Afghanistan: "004",
+      Iraq: "368",
+      Lebanon: "422",
+      Morocco: "504",
+      Algeria: "012",
+      Tunisia: "788",
+      Liberia: "430",
+      "Sierra Leone": "694",
+      Nepal: "524",
+      Cambodia: "116",
+      Myanmar: "104",
+      "Kyrgyz Republic": "417",
+      Tajikistan: "762",
+      Armenia: "051",
+      Azerbaijan: "031",
+      Moldova: "498",
+      Ukraine: "804",
+      Albania: "008",
+      "Bosnia and Herzegovina": "070",
+      Croatia: "191",
+      Serbia: "688",
+      "North Macedonia": "807",
+      Belarus: "112",
+    };
+
+    g.selectAll(".country")
+      .data(countries.features)
+      .enter()
+      .append("path")
+      .attr("class", "country")
+      .attr("d", path)
+      .attr("fill", (d) => {
+        const countryName = Object.keys(countryNameToId).find(
+          (name) => countryNameToId[name] === d.id
+        );
+        if (countryName && violenceData[countryName]) {
+          return colorScale(violenceData[countryName]);
+        }
+        return "#e0e0e0";
+      })
+      .attr("stroke", "#ffffff")
+      .attr("stroke-width", 0.3)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .style("cursor", "pointer")
+      .on("mouseover", function (event, d) {
+        d3.select(this)
+          .attr("stroke", "#1f2937")
+          .attr("stroke-width", 2)
+          .raise();
+        const countryName = Object.keys(countryNameToId).find(
+          (name) => countryNameToId[name] === d.id
+        );
+        if (countryName && violenceData[countryName]) {
+          tooltip
+            .style("opacity", 1)
+            .html(
+              `<strong>${countryName}</strong><br/>Violence Score: ${violenceData[
+                countryName
+              ].toFixed(2)}%`
+            );
+        }
+      })
+      .on("mousemove", function (event) {
+        tooltip
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY - 10 + "px");
+      })
+      .on("mouseout", function () {
+        d3.select(this)
+          .attr("stroke", "#ffffff")
+          .attr("stroke-width", 0.3)
+          .lower();
+        tooltip.style("opacity", 0);
+      });
+  })
+  .catch((error) => {
+    console.error("Error loading map:", error);
+    document.getElementById("worldHeatmap").innerHTML =
+      '<div class="bg-red-50 text-red-700 p-5 rounded-lg border-l-4 border-red-600">Failed to load world map data. Error: ' +
+      error.message +
+      "</div>";
+  });
+
+// Zoom button handlers
+d3.select("#zoom-in").on("click", () => {
+  svg.transition().call(zoom.scaleBy, 1.5);
+});
+
+d3.select("#zoom-out").on("click", () => {
+  svg.transition().call(zoom.scaleBy, 0.67);
+});
+
+d3.select("#zoom-reset").on("click", () => {
+  svg.transition().call(zoom.transform, d3.zoomIdentity);
+});

@@ -1,0 +1,67 @@
+<style>
+  .country {
+    vector-effect: non-scaling-stroke;
+  }
+</style>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo-projection@4"></script>
+
+<div class="flex h-full w-full max-w-[600px] mx-auto">
+  <div class="bg-white p-6 mb-8 font-sans border-2 border-purple-800">
+    <div class="mb-8 border-b-2 border-gray-200 pb-4">
+      <h2 class="text-2xl font-bold text-purple-800 uppercase tracking-wider">
+        Violence Acceptance Rate
+      </h2>
+    </div>
+    <div id="worldHeatmap" class="w-full relative">
+      <div class="absolute top-2 right-2 flex flex-col gap-1 z-10">
+        <button
+          class="w-8 h-8 bg-white border border-gray-300 rounded cursor-pointer flex items-center justify-center font-bold shadow-md hover:bg-gray-100 hover:shadow-lg transition-all"
+          id="zoom-in"
+          title="Zoom in"
+        >
+          +
+        </button>
+        <button
+          class="w-8 h-8 bg-white border border-gray-300 rounded cursor-pointer flex items-center justify-center font-bold shadow-md hover:bg-gray-100 hover:shadow-lg transition-all"
+          id="zoom-out"
+          title="Zoom out"
+        >
+          -
+        </button>
+        <button
+          class="w-8 h-8 bg-white border border-gray-300 rounded cursor-pointer flex items-center justify-center font-bold shadow-md hover:bg-gray-100 hover:shadow-lg transition-all"
+          id="zoom-reset"
+          title="Reset zoom"
+        >
+          ⟲
+        </button>
+      </div>
+    </div>
+    <div class="flex items-center justify-center mt-4 gap-2">
+      <span class="text-sm text-gray-600">0%</span>
+      <div
+        class="flex-1 h-4 rounded"
+        style="
+          background: linear-gradient(
+            to right,
+            #fdeff9,
+            #ec38bc,
+            #7303c0,
+            #03001e
+          );
+          max-width: 300px;
+        "
+      ></div>
+      <span class="text-sm text-gray-600" id="maxValue">50%</span>
+    </div>
+  </div>
+</div>
+
+<div
+  class="absolute px-3 py-2 bg-black/80 text-white rounded pointer-events-none text-sm opacity-0 transition-opacity"
+  id="tooltip"
+></div>
+
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<script src="/static/js/heatmap.js"></script>
