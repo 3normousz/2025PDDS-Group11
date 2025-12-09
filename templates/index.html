@@ -1,13 +1,12 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="./static/src/output.css" rel="stylesheet">
-</head>
-<body>
-  <h1 class="text-3xl font-bold underline text-red-500">
-    Hello world!
-  </h1>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block hook %}
+  {% include "components/hook.html" %}
+{% endblock %}
+
+{% block content %}
+
+   {% include "components/heat_map.html" %}
+   {% include 'components/gender_fill.html' %}
+
+{% endblock %}

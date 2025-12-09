@@ -1,1 +1,12 @@
+@font-face {
+  font-family: glacial-indifference;
+  font-display: swap;
+  src: url("../assets/fonts/glacial-indifference/GlacialIndifference-Regular.otf");
+}
+
 @import "tailwindcss";
+
+@theme {
+  --font-glacial: glacial-indifference, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
