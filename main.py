@@ -14,11 +14,16 @@ def index():
     try:
         df = pd.read_csv('data/makeovermonday-2020w10/violence_data.csv')
 
-        #subset = df[(df['Gender'] == 'F') & (df['Question'] == '... for at least one specific reason')]
-        #subset = df[(df['Gender'] == 'F')]
-        subset =  df['Question'] == '... for at least one specific reason'
-        percentage = round(subset['Value'].mean(), 1)
-        
+        # Example filters (uncomment desired ones)
+        # subset = df[(df['Gender'] == 'F') & (df['Question'] == '... for at least one specific reason')]
+        # subset = df[(df['Gender'] == 'F')]
+        mask = df['Question'].astype(str).str.strip() == '... for at least one specific reason'
+        subset = df[mask].copy()
+
+        # Ensure 'Value' is numeric and drop missing values
+        values = pd.to_numeric(subset['Value'], errors='coerce').dropna()
+        percentage = round(values.mean(), 1) if not values.empty else 0
+
         ratio = int(round(100 / percentage)) if percentage > 0 else 0
         
         text = f"1 AMONG {ratio} PEOPLE THINK THAT DOMESTIC VIOLENCE IS ACCEPTABLE"
@@ -91,6 +96,50 @@ def reason_gender_api():
         error_details = traceback.format_exc()
         print(f"Error in reason_gender_api: {error_details}")
         return jsonify({"error": str(e), "details": error_details}), 500
+
+@app.route("/api/locations")
+def locations_api():
+    try:
+        df = pd.read_csv('data/makeovermonday-2020w10/violence_data.csv')
+        countries = df['Country'].unique().tolist()
+        
+        region_map = {
+            "Africa": [
+                "Angola", "Benin", "Burkina Faso", "Burundi", "Cameroon", "Chad", "Comoros", 
+                "Congo", "Congo Democratic Republic", "Cote d'Ivoire", "Egypt", "Eritrea", 
+                "Eswatini", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Kenya", 
+                "Lesotho", "Liberia", "Madagascar", "Malawi", "Mali", "Morocco", "Mozambique", 
+                "Namibia", "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", "Senegal", 
+                "Sierra Leone", "South Africa", "Tanzania", "Togo", "Uganda", "Zambia", "Zimbabwe"
+            ],
+            "Asia": [
+                "Afghanistan", "Armenia", "Azerbaijan", "Bangladesh", "Cambodia", "India", 
+                "Indonesia", "Jordan", "Kyrgyz Republic", "Maldives", "Myanmar", "Nepal", 
+                "Pakistan", "Philippines", "Tajikistan", "Timor-Leste", "Turkey", "Turkmenistan", "Yemen"
+            ],
+            "Europe": [
+                "Albania", "Moldova", "Ukraine"
+            ],
+            "North America": [
+                "Dominican Republic", "Guatemala", "Haiti", "Honduras", "Nicaragua"
+            ],
+            "South America": [
+                "Bolivia", "Colombia", "Guyana", "Peru"
+            ]
+        }
+        
+        # Identify countries not in any region and add them to "Other"
+        mapped_countries = set()
+        for countries_list in region_map.values():
+            mapped_countries.update(countries_list)
+            
+        others = [c for c in countries if c not in mapped_countries]
+        if others:
+            region_map["Other"] = others
+
+        return jsonify(region_map), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)

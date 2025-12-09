@@ -1,0 +1,155 @@
+<div class="flex gap-4">
+    <!-- Region Dropdown -->
+    <div class="relative inline-block text-left">
+        <button type="button" id="region-btn" onclick="toggleDropdown('region-dropdown')" class="inline-flex justify-between items-center w-40 px-4 py-2 bg-white border-2 border-[#7F00FF] text-[#7F00FF] font-bold text-sm uppercase tracking-wider hover:bg-purple-50 focus:outline-none">
+            <span class="truncate">Region</span>
+            <svg class="-mr-1 ml-2 h-5 w-5 fill-current shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+        <div id="region-dropdown" class="hidden absolute left-0 mt-1 w-40 bg-white border-2 border-[#7F00FF] shadow-lg z-50">
+            <div class="py-1 max-h-60 overflow-y-auto" id="region-list">
+                <!-- Regions will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Country Dropdown -->
+    <div class="relative inline-block text-left">
+        <button type="button" id="country-btn" onclick="toggleDropdown('country-dropdown')" class="inline-flex justify-between items-center w-40 px-4 py-2 bg-white border-2 border-[#7F00FF] text-[#7F00FF] font-bold text-sm uppercase tracking-wider hover:bg-purple-50 focus:outline-none">
+            <span class="truncate">Country</span>
+            <svg class="-mr-1 ml-2 h-5 w-5 fill-current shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+        <div id="country-dropdown" class="hidden absolute left-0 mt-1 w-40 bg-white border-2 border-[#7F00FF] shadow-lg z-50">
+            <div class="py-1 max-h-60 overflow-y-auto" id="country-list">
+                <!-- Countries will be populated here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let locationData = {};
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/api/locations')
+            .then(response => response.json())
+            .then(data => {
+                locationData = data;
+                populateRegions();
+                populateCountries(); // Populate all countries initially
+            })
+            .catch(error => console.error('Error loading locations:', error));
+    });
+
+    function populateRegions() {
+        const regionList = document.getElementById('region-list');
+        regionList.innerHTML = '';
+        
+        // Add "All Regions" option
+        const allOption = document.createElement('a');
+        allOption.href = '#';
+        allOption.className = 'block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100 hover:text-[#7F00FF]';
+        allOption.textContent = 'All Regions';
+        allOption.onclick = (e) => {
+            e.preventDefault();
+            selectRegion('All Regions');
+        };
+        regionList.appendChild(allOption);
+
+        Object.keys(locationData).sort().forEach(region => {
+            const a = document.createElement('a');
+            a.href = '#';
+            a.className = 'block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100 hover:text-[#7F00FF]';
+            a.textContent = region;
+            a.onclick = (e) => {
+                e.preventDefault();
+                selectRegion(region);
+            };
+            regionList.appendChild(a);
+        });
+    }
+
+    function populateCountries(region = null) {
+        const countryList = document.getElementById('country-list');
+        countryList.innerHTML = '';
+        
+        let countries = [];
+        if (region && region !== 'All Regions') {
+            countries = locationData[region] || [];
+        } else {
+            // Flatten all countries
+            Object.values(locationData).forEach(list => countries.push(...list));
+        }
+        
+        // Sort countries alphabetically
+        countries.sort();
+
+        // Add "All Countries" option
+        const allOption = document.createElement('a');
+        allOption.href = '#';
+        allOption.className = 'block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100 hover:text-[#7F00FF]';
+        allOption.textContent = 'All Countries';
+        allOption.onclick = (e) => {
+            e.preventDefault();
+            selectCountry('All Countries');
+        };
+        countryList.appendChild(allOption);
+
+        countries.forEach(country => {
+            const a = document.createElement('a');
+            a.href = '#';
+            a.className = 'block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100 hover:text-[#7F00FF]';
+            a.textContent = country;
+            a.onclick = (e) => {
+                e.preventDefault();
+                selectCountry(country);
+            };
+            countryList.appendChild(a);
+        });
+    }
+
+    function selectRegion(region) {
+        const btn = document.getElementById('region-btn');
+        btn.querySelector('span').textContent = region === 'All Regions' ? 'Region' : region;
+        toggleDropdown('region-dropdown');
+        
+        // Reset country selection
+        document.getElementById('country-btn').querySelector('span').textContent = 'Country';
+        
+        // Filter countries
+        populateCountries(region);
+    }
+
+    function selectCountry(country) {
+        const btn = document.getElementById('country-btn');
+        btn.querySelector('span').textContent = country === 'All Countries' ? 'Country' : country;
+        toggleDropdown('country-dropdown');
+    }
+
+    function toggleDropdown(id) {
+        const dropdown = document.getElementById(id);
+        const allDropdowns = document.querySelectorAll('[id$="-dropdown"]');
+        
+        // Close other dropdowns
+        allDropdowns.forEach(d => {
+            if (d.id !== id) d.classList.add('hidden');
+        });
+        
+        dropdown.classList.toggle('hidden');
+    }
+
+    // Close dropdowns when clicking outside
+    window.onclick = function(event) {
+        if (!event.target.closest('button')) {
+            const dropdowns = document.querySelectorAll('[id$="-dropdown"]');
+            dropdowns.forEach(d => {
+                if (!d.classList.contains('hidden')) {
+                    d.classList.add('hidden');
+                }
+            });
+        }
+    }
+</script>

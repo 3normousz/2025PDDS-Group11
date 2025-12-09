@@ -4,8 +4,16 @@
   {% include "components/hook.html" %}
 {% endblock %}
 
+{% block dropdowns %}
+  {% include "components/dropdowns.html" %}
+{% endblock %}
+
 {% block content %}
 
+   {% include "components/heat_map.html" %}
+   {% include 'components/gender_fill.html' %}
+   {% include "components/heat_map.html" %}
+   {% include 'components/gender_fill.html' %}
    {% include "components/heat_map.html" %}
    {% include 'components/gender_fill.html' %}
 
