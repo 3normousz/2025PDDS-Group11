@@ -193,13 +193,13 @@
         displayReason.charAt(0).toLowerCase() + displayReason.slice(1);
 
       if (diff > 0) {
-        text = `Women show <span class="font-bold text-purple-700">${diff}% higher</span> agreement with "It is acceptable for a man to beat his wife ${displayReason}."`;
+        text = `Women show <span class="font-bold text-purple-700">${diff}% higher</span> agreement with "It is acceptable for a man to beat his wife <span class="font-bold text-purple-700">${displayReason}.</span>"`;
       } else if (diff < 0) {
         text = `Men show <span class="font-bold text-blue-700">${Math.abs(
           diff
         )}% higher</span> agreement with "It is acceptable for a man to beat his wife ${displayReason}."`;
       } else {
-        text = `Men and Women show <span class="font-bold text-gray-700">equal</span> agreement with "It is acceptable for a man to beat his wife ${displayReason}."`;
+        text = `Men and Women show <span class="font-bold text-gray-700">equal</span> agreement with "It is acceptable for a man to beat his wife <span class="font-bold text-purple-700">${displayReason}.</span>"`;
       }
 
       analysisText.innerHTML = text;

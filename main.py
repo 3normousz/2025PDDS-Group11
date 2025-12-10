@@ -141,5 +141,59 @@ def locations_api():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/api/impact-data")
+def impact_data_api():
+    try:
+        df = pd.read_csv('data/makeovermonday-2020w10/violence_data.csv')
+        
+        # Helper function: compute impact and sort descending
+        def compute_impact_sorted(selected_country):
+            if selected_country != "Worldwide":
+                sub = df[df["Country"] == selected_country]
+            else:
+                sub = df.copy()
+
+            if sub.empty:
+                return {"demo_question": [], "impact": [], "color": []}
+
+            # Average acceptance for each subgroup
+            group_means = (
+                sub.groupby(["Demographics Question", "Demographics Response"])["Value"]
+                .mean()
+                .reset_index()
+            )
+
+            # Impact = highest - lowest subgroup acceptance
+            impact = (
+                group_means.groupby("Demographics Question")["Value"]
+                .agg(lambda x: x.max() - x.min())
+                .reset_index()
+                .rename(columns={"Value": "impact"})
+            )
+
+            impact["impact"] = impact["impact"].fillna(0).round(1)
+
+            # Sort descending
+            impact = impact.sort_values("impact", ascending=False).reset_index(drop=True)
+
+            # Highlight max factor in purple
+            colors = ["#8A2BE2"] + ["#D9D9D9"] * (len(impact) - 1)
+            
+            return {
+                "demo_question": impact["Demographics Question"].tolist(),
+                "impact": impact["impact"].tolist(),
+                "color": colors
+            }
+
+        countries = ["Worldwide"] + sorted(df["Country"].unique())
+        impact_by_country = {c: compute_impact_sorted(c) for c in countries}
+        
+        return jsonify(impact_by_country), 200
+
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)

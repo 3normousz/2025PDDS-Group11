@@ -32,6 +32,7 @@
 
 <script>
     let locationData = {};
+    let currentRegion = 'All Regions';
 
     document.addEventListener('DOMContentLoaded', function() {
         fetch('/api/locations')
@@ -39,7 +40,7 @@
             .then(data => {
                 locationData = data;
                 populateRegions();
-                populateCountries(); // Populate all countries initially
+                populateCountries();
             })
             .catch(error => console.error('Error loading locations:', error));
     });
@@ -48,7 +49,7 @@
         const regionList = document.getElementById('region-list');
         regionList.innerHTML = '';
         
-        // Add "All Regions" option
+        // "All Regions" option
         const allOption = document.createElement('a');
         allOption.href = '#';
         allOption.className = 'block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100 hover:text-[#7F00FF]';
@@ -87,11 +88,11 @@
         // Sort countries alphabetically
         countries.sort();
 
-        // Add "All Countries" option
+        // "All Countries" option
         const allOption = document.createElement('a');
         allOption.href = '#';
         allOption.className = 'block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100 hover:text-[#7F00FF]';
-        allOption.textContent = 'All Countries';
+        allOption.textContent = (region && region !== 'All Regions') ? `All ${region}` : 'All Countries';
         allOption.onclick = (e) => {
             e.preventDefault();
             selectCountry('All Countries');
@@ -112,6 +113,7 @@
     }
 
     function selectRegion(region) {
+        currentRegion = region;
         const btn = document.getElementById('region-btn');
         btn.querySelector('span').textContent = region === 'All Regions' ? 'Region' : region;
         toggleDropdown('region-dropdown');
@@ -121,12 +123,43 @@
         
         // Filter countries
         populateCountries(region);
+
+        // Update Heatmap
+        if (window.updateHeatmap) {
+            if (region === 'All Regions') {
+                window.updateHeatmap(null); // Show all
+            } else {
+                // Pass the list of countries in this region
+                const countriesInRegion = locationData[region] || [];
+                window.updateHeatmap(countriesInRegion);
+            }
+        }
     }
 
     function selectCountry(country) {
         const btn = document.getElementById('country-btn');
         btn.querySelector('span').textContent = country === 'All Countries' ? 'Country' : country;
         toggleDropdown('country-dropdown');
+        
+        // Update charts if the function exists
+        if (window.updateImpactChart) {
+            window.updateImpactChart(country === 'All Countries' ? 'Worldwide' : country);
+        }
+
+        // Update Heatmap
+        if (window.updateHeatmap) {
+            if (country === 'All Countries') {
+                if (currentRegion !== 'All Regions') {
+                    // If we are in a region, show all countries in that region
+                    window.updateHeatmap(locationData[currentRegion]);
+                } else {
+                    // Worldwide
+                    window.updateHeatmap(null);
+                }
+            } else {
+                window.updateHeatmap(country);
+            }
+        }
     }
 
     function toggleDropdown(id) {

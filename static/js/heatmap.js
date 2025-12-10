@@ -131,6 +131,32 @@ Promise.all([
       Serbia: "688",
       "North Macedonia": "807",
       Belarus: "112",
+      Niger: "562",
+      Angola: "024",
+      Benin: "204",
+      "Burkina Faso": "854",
+      Burundi: "108",
+      Cameroon: "120",
+      Chad: "148",
+      Comoros: "174",
+      Congo: "178",
+      "Congo Democratic Republic": "180",
+      "Cote d'Ivoire": "384",
+      Eritrea: "232",
+      Eswatini: "748",
+      Gabon: "266",
+      Gambia: "270",
+      Guinea: "324",
+      Guyana: "328",
+      Lesotho: "426",
+      Madagascar: "450",
+      Maldives: "462",
+      Namibia: "516",
+      Rwanda: "646",
+      "Sao Tome and Principe": "678",
+      "Timor-Leste": "626",
+      Togo: "768",
+      Turkmenistan: "795",
     };
 
     g.selectAll(".country")
@@ -183,6 +209,33 @@ Promise.all([
           .lower();
         tooltip.style("opacity", 0);
       });
+    // Expose update function globally
+    window.updateHeatmap = function(selectedCountry) {
+      g.selectAll(".country")
+        .transition().duration(750)
+        .style("opacity", 1)
+        .attr("fill", (d) => {
+          const countryName = Object.keys(countryNameToId).find(
+            (name) => countryNameToId[name] === d.id
+          );
+          
+          // Determine if this country is "selected"
+          let isSelected = false;
+          if (!selectedCountry || selectedCountry === 'All Countries') {
+              isSelected = true;
+          } else if (Array.isArray(selectedCountry)) {
+              isSelected = selectedCountry.includes(countryName);
+          } else {
+              isSelected = countryName === selectedCountry;
+          }
+
+          // If selected and has data, show color. Otherwise grey.
+          if (isSelected && countryName && violenceData[countryName]) {
+            return colorScale(violenceData[countryName]);
+          }
+          return "#e0e0e0";
+        });
+    };
   })
   .catch((error) => {
     console.error("Error loading map:", error);
