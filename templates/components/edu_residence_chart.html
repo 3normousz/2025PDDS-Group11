@@ -17,54 +17,58 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    fetch("/api/edu-residence")
+    fetch("/api/edu-residence?t=" + new Date().getTime())
       .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          console.error("Error fetching data:", data.error);
+      .then((traces) => {
+        if (traces.error) {
+          console.error("Error fetching data:", traces.error);
           return;
         }
 
-        const trace = {
-          x: data.education_levels,
-          y: data.values,
-          type: "scatter",
-          mode: "lines+markers",
-          marker: { color: "#7303c0" },
-          line: { color: "#7303c0" },
-        };
-
         const layout = {
           title: {
-            text: "Violence Acceptance Rate by Education Level (F)",
+            text: "VIOLENCE ACCEPTANCE RATE BY EDUCATION & GENDER",
             font: {
-              family: "Glacial Indifference, sans-serif",
+              family: "glacial-indifference, sans-serif",
               size: 14,
-              color: "#4B0082",
+              color: "#7303c0",
             },
           },
           xaxis: {
-            title: "Education Level",
+            title: {
+              text: "Education Level",
+              font: {
+                family: "glacial-indifference, sans-serif",
+                size: 14,
+              },
+            },
             fixedrange: true,
-            showgrid: true,
-            gridcolor: "#E5E7EB",
-            gridwidth: 1,
+            showgrid: false,
+            zeroline: false,
           },
           yaxis: {
-            title: "Violence Acceptance (%)",
-            range: [0, 60],
+            title: {
+              text: "Average acceptance rate (%)",
+              font: {
+                family: "glacial-indifference, sans-serif",
+                size: 14,
+              },
+            },
+            range: [0, 40],
             fixedrange: true,
             showgrid: true,
-            gridcolor: "#E5E7EB",
-            gridwidth: 1,
+            gridcolor: "#eee",
+            zeroline: false,
           },
           plot_bgcolor: "white",
           paper_bgcolor: "white",
           font: {
-            family: "Glacial Indifference, sans-serif",
-            color: "#4B0082",
+            family: "glacial-indifference, sans-serif",
+            color: "black",
+            size: 14
           },
-          margin: { t: 40, r: 20, b: 40, l: 60 },
+          legend: { title: { text: "" } },
+          margin: { t: 60, r: 20, b: 60, l: 60 },
         };
 
         const config = {
@@ -72,7 +76,7 @@
           responsive: true,
         };
 
-        Plotly.newPlot("edu-residence-chart", [trace], layout, config);
+        Plotly.newPlot("edu-residence-chart", traces, layout, config);
       })
       .catch((error) => console.error("Error:", error));
   });

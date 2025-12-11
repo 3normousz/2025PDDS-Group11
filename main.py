@@ -203,39 +203,57 @@ def edu_residence_api():
     try:
         df = pd.read_csv(dataset_path)
         
+        EDU_ORDER = ["No education", "Primary", "Secondary", "Higher"]
+        gender_map = {"F": "Female", "M": "Male"}
+
         # Filter for Education data
-        edu_mask = df["Demographics Question"] == "Education"
-        edu_data = df[edu_mask].copy()
+        edu = df[df["Demographics Question"] == "Education"].copy()
         
-        # Filter by Gender (Default to F)
-        gender = "F"
-        if gender and gender != "All":
-            edu_data = edu_data[edu_data["Gender"] == gender]
+        # Map Gender
+        edu["Gender"] = edu["Gender"].map(gender_map)
 
         # Ensure Value is numeric
-        edu_data['Value'] = pd.to_numeric(edu_data['Value'], errors='coerce')
+        edu["Value"] = pd.to_numeric(edu["Value"], errors='coerce')
+        edu = edu.dropna(subset=["Value", "Gender"])
 
-        # Define order
-        edu_order = ["No education", "Primary", "Secondary", "Higher"]
+        # Group by Education and Gender (Worldwide average)
+        plot_df = (
+            edu.groupby(["Demographics Response", "Gender"])["Value"]
+            .mean()
+            .reset_index()
+            .rename(columns={"Demographics Response": "Education"})
+        )
         
-        # Aggregate (mean) by Education Level
-        edu_grouped = edu_data.groupby("Demographics Response")["Value"].mean().reset_index()
-        
-        # Sort by education level
-        edu_grouped = edu_grouped[edu_grouped["Demographics Response"].isin(edu_order)]
-        edu_grouped["Demographics Response"] = pd.Categorical(
-            edu_grouped["Demographics Response"], 
-            categories=edu_order, 
+        # Sort Education
+        plot_df["Education"] = pd.Categorical(
+            plot_df["Education"],
+            categories=EDU_ORDER,
             ordered=True
         )
-        edu_grouped = edu_grouped.sort_values("Demographics Response").dropna()
+        plot_df = plot_df.sort_values("Education")
 
-        return jsonify({
-            "education_levels": edu_grouped["Demographics Response"].tolist(),
-            "values": edu_grouped["Value"].tolist()
-        })
+        # Prepare traces
+        traces = []
+        colors = {"Female": "#9b14be", "Male": "#decdff"}
+        
+        for gender in ["Female", "Male"]:
+            gender_data = plot_df[plot_df["Gender"] == gender]
+            if not gender_data.empty:
+                traces.append({
+                    "x": gender_data["Education"].tolist(),
+                    "y": gender_data["Value"].tolist(),
+                    "name": gender,
+                    "type": "scatter",
+                    "mode": "lines+markers",
+                    "line": {"color": colors.get(gender, "#000000")},
+                    "marker": {"size": 8}
+                })
+
+        return jsonify(traces)
 
     except Exception as e:
+        import traceback
+        print(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
