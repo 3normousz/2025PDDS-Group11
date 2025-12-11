@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 
 # Load dataset
-df = pd.read_csv("violence_data.csv")
+df = pd.read_csv("data/makeovermonday-2020w10/violence_data.csv")
 
 # Function to create the chart
 def plot_edu_residence(gender="All"):

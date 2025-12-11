@@ -1,0 +1,79 @@
+<div class="flex h-full w-full max-w-full mx-auto px-4 md:px-0">
+  <div
+    class="bg-white p-4 md:p-6 mb-8 font-glacial border-2 border-purple-800 w-full"
+  >
+    <div class="mb-8 border-b-2 border-gray-200 pb-4">
+      <h2
+        class="text-xl md:text-2xl font-bold text-purple-800 uppercase tracking-wider"
+      >
+        Violence Acceptance Rate by Education Level
+      </h2>
+    </div>
+    <div class="w-full relative">
+      <div id="edu-residence-chart" class="w-full h-[400px]"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    fetch("/api/edu-residence")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          console.error("Error fetching data:", data.error);
+          return;
+        }
+
+        const trace = {
+          x: data.education_levels,
+          y: data.values,
+          type: "scatter",
+          mode: "lines+markers",
+          marker: { color: "#7303c0" },
+          line: { color: "#7303c0" },
+        };
+
+        const layout = {
+          title: {
+            text: "Violence Acceptance Rate by Education Level (F)",
+            font: {
+              family: "Glacial Indifference, sans-serif",
+              size: 14,
+              color: "#4B0082",
+            },
+          },
+          xaxis: {
+            title: "Education Level",
+            fixedrange: true,
+            showgrid: true,
+            gridcolor: "#E5E7EB",
+            gridwidth: 1,
+          },
+          yaxis: {
+            title: "Violence Acceptance (%)",
+            range: [0, 60],
+            fixedrange: true,
+            showgrid: true,
+            gridcolor: "#E5E7EB",
+            gridwidth: 1,
+          },
+          plot_bgcolor: "white",
+          paper_bgcolor: "white",
+          font: {
+            family: "Glacial Indifference, sans-serif",
+            color: "#4B0082",
+          },
+          margin: { t: 40, r: 20, b: 40, l: 60 },
+        };
+
+        const config = {
+          displayModeBar: false,
+          responsive: true,
+        };
+
+        Plotly.newPlot("edu-residence-chart", [trace], layout, config);
+      })
+      .catch((error) => console.error("Error:", error));
+  });
+</script>

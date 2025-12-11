@@ -6,15 +6,17 @@ import plotly.graph_objects as go
 
 app = Flask(__name__, static_folder='static')
 
-# Fonts path, you can directly refer to this in your Plotly
-glacial_indifference = os.path.join(os.getcwd(), "assets/fonts/", "GlacialIndifference-Regular.otf") 
+# Fonts path, you can just directly refer to this in your Plotly
+glacial_indifference = os.path.join(os.getcwd(), "assets/fonts/", "GlacialIndifference-Regular.otf")
+
+# Dataset path
+dataset_path = os.path.join(os.getcwd(), "data/makeovermonday-2020w10/", "violence_data.csv")
 
 @app.route("/")
 def index():
     try:
-        df = pd.read_csv('data/makeovermonday-2020w10/violence_data.csv')
+        df = pd.read_csv(dataset_path)
 
-        # Example filters (uncomment desired ones)
         # subset = df[(df['Gender'] == 'F') & (df['Question'] == '... for at least one specific reason')]
         # subset = df[(df['Gender'] == 'F')]
         mask = df['Question'].astype(str).str.strip() == '... for at least one specific reason'
@@ -27,6 +29,7 @@ def index():
         ratio = int(round(100 / percentage)) if percentage > 0 else 0
         
         text = f"1 AMONG {ratio} PEOPLE THINK THAT DOMESTIC VIOLENCE IS ACCEPTABLE"
+
     except Exception as e:
         print(f"Error calculating hook data: {e}")
         percentage = 0
@@ -46,7 +49,7 @@ def reason_gender_page():
 @app.route("/api/world-heatmap")
 def world_heatmap_api():
     try:
-        df = pd.read_csv('data/makeovermonday-2020w10/violence_data.csv')
+        df = pd.read_csv(dataset_path)
         
         country_data = df[df['Value'].notna()].groupby('Country')['Value'].mean().reset_index()
         country_data.columns = ['Country', 'Average_Violence_Score']
@@ -67,7 +70,7 @@ def world_heatmap_api():
 @app.route("/api/reason-gender")
 def reason_gender_api():
     try:
-        df = pd.read_csv('data/makeovermonday-2020w10/violence_data.csv')
+        df = pd.read_csv(dataset_path)
 
         df = df[df['Value'].notna()].copy()
 
@@ -100,7 +103,7 @@ def reason_gender_api():
 @app.route("/api/locations")
 def locations_api():
     try:
-        df = pd.read_csv('data/makeovermonday-2020w10/violence_data.csv')
+        df = pd.read_csv(dataset_path)
         countries = df['Country'].unique().tolist()
         
         region_map = {
@@ -144,9 +147,9 @@ def locations_api():
 @app.route("/api/impact-data")
 def impact_data_api():
     try:
-        df = pd.read_csv('data/makeovermonday-2020w10/violence_data.csv')
+        df = pd.read_csv(dataset_path)
         
-        # Helper function: compute impact and sort descending
+        # Compute impact and sort descending
         def compute_impact_sorted(selected_country):
             if selected_country != "Worldwide":
                 sub = df[df["Country"] == selected_country]
@@ -193,6 +196,46 @@ def impact_data_api():
     except Exception as e:
         import traceback
         print(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/edu-residence")
+def edu_residence_api():
+    try:
+        df = pd.read_csv(dataset_path)
+        
+        # Filter for Education data
+        edu_mask = df["Demographics Question"] == "Education"
+        edu_data = df[edu_mask].copy()
+        
+        # Filter by Gender (Default to F)
+        gender = "F"
+        if gender and gender != "All":
+            edu_data = edu_data[edu_data["Gender"] == gender]
+
+        # Ensure Value is numeric
+        edu_data['Value'] = pd.to_numeric(edu_data['Value'], errors='coerce')
+
+        # Define order
+        edu_order = ["No education", "Primary", "Secondary", "Higher"]
+        
+        # Aggregate (mean) by Education Level
+        edu_grouped = edu_data.groupby("Demographics Response")["Value"].mean().reset_index()
+        
+        # Sort by education level
+        edu_grouped = edu_grouped[edu_grouped["Demographics Response"].isin(edu_order)]
+        edu_grouped["Demographics Response"] = pd.Categorical(
+            edu_grouped["Demographics Response"], 
+            categories=edu_order, 
+            ordered=True
+        )
+        edu_grouped = edu_grouped.sort_values("Demographics Response").dropna()
+
+        return jsonify({
+            "education_levels": edu_grouped["Demographics Response"].tolist(),
+            "values": edu_grouped["Value"].tolist()
+        })
+
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":

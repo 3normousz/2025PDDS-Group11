@@ -1,17 +1,16 @@
 {% extends "base.html" %}
 
 {% block hook %}
-  {% include "components/hook.html" %}
+    {% include "components/hook.html" %}
 {% endblock %}
 
 {% block dropdowns %}
-  {% include "components/dropdowns.html" %}
+    {% include "components/dropdowns.html" %}
 {% endblock %}
 
 {% block content %}
-
-   {% include "components/heat_map.html" %}
-   {% include 'components/gender_fill.html' %}
-   {% include 'components/cause_factor.html' %}
-
+    {% include "components/heat_map.html" %}
+    {% include 'components/gender_fill.html' %}
+    {% include 'components/cause_factor.html' %}
+    {% include 'components/edu_residence_chart.html' %}
 {% endblock %}
