@@ -1,16 +1,40 @@
 {% extends "base.html" %}
 
-{% block hook %}
+{% block top_content %}
     {% include "components/hook.html" %}
 {% endblock %}
 
-{% block dropdowns %}
-    {% include "components/dropdowns.html" %}
+{% block middle_content %}
+<div class="flex flex-col lg:flex-row gap-4 w-full h-full">
+    <!-- Heatmap -->
+    <div class="flex-1 h-[500px] lg:h-full min-h-0 overflow-hidden">
+        {% include "components/heat_map.html" %}
+    </div>
+    <!-- Education Impact Chart -->
+    <div class="flex-1 h-[500px] lg:h-full min-h-0 overflow-hidden">
+        {% include 'components/cause_factor.html' %}
+    </div>
+</div>
 {% endblock %}
 
-{% block content %}
-    {% include "components/heat_map.html" %}
-    {% include 'components/gender_fill.html' %}
-    {% include 'components/cause_factor.html' %}
-    {% include 'components/edu_residence_chart.html' %}
+{% block bottom_content %}
+<div class="flex flex-col gap-2 w-full h-full">
+    <!-- Dropdowns -->
+    <div class="flex-none flex justify-center gap-4">
+        {% include "components/dropdowns.html" %}
+    </div>
+
+    <!-- Bottom Charts -->
+    <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="h-[400px] lg:h-full min-h-0 overflow-hidden">
+            {% include 'components/gender_fill.html' %}
+        </div>
+        <div class="h-[400px] lg:h-full min-h-0 overflow-hidden flex items-center justify-center">
+            {% include 'components/education_text.html' %}
+        </div>
+        <div class="h-[400px] lg:h-full min-h-0 overflow-hidden">
+            {% include 'components/edu_residence_chart.html' %}
+        </div>
+    </div>
+</div>
 {% endblock %}

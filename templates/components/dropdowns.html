@@ -1,13 +1,13 @@
-<div class="flex gap-4">
+<div class="flex flex-wrap justify-center gap-4">
   <!-- Region Dropdown -->
   <div class="relative inline-block text-left">
     <button
       type="button"
       id="region-btn"
       onclick="toggleDropdown('region-dropdown')"
-      class="inline-flex justify-between items-center w-40 px-4 py-2 bg-white border-2 border-purple-800 text-purple-800 font-bold text-sm uppercase tracking-wider hover:bg-purple-50 focus:outline-none"
+      class="inline-flex justify-between items-center w-40 px-4 py-2 bg-[#0a015b] border border-white text-white font-bold text-sm uppercase tracking-wider hover:bg-white/10 focus:outline-none"
     >
-      <span class="truncate">Region</span>
+      <span class="truncate" id="region-btn-text">Region</span>
       <svg
         class="-mr-1 ml-2 h-5 w-5 fill-current shrink-0"
         xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +22,7 @@
     </button>
     <div
       id="region-dropdown"
-      class="hidden absolute left-0 mt-1 w-40 bg-white border-2 border-purple-800 shadow-lg z-50"
+      class="hidden absolute left-0 mt-1 w-40 bg-[#0a015b] border border-white shadow-lg z-50 text-white"
     >
       <div class="py-1 max-h-60 overflow-y-auto" id="region-list">
         <!-- Regions will be populated here -->
@@ -36,9 +36,9 @@
       type="button"
       id="country-btn"
       onclick="toggleDropdown('country-dropdown')"
-      class="inline-flex justify-between items-center w-40 px-4 py-2 bg-white border-2 border-purple-800 text-purple-800 font-bold text-sm uppercase tracking-wider hover:bg-purple-50 focus:outline-none"
+      class="inline-flex justify-between items-center w-40 px-4 py-2 bg-[#0a015b] border border-white text-white font-bold text-sm uppercase tracking-wider hover:bg-white/10 focus:outline-none"
     >
-      <span class="truncate">Country</span>
+      <span class="truncate" id="country-btn-text">Country</span>
       <svg
         class="-mr-1 ml-2 h-5 w-5 fill-current shrink-0"
         xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +53,7 @@
     </button>
     <div
       id="country-dropdown"
-      class="hidden absolute left-0 mt-1 w-40 bg-white border-2 border-purple-800 shadow-lg z-50"
+      class="hidden absolute left-0 mt-1 w-40 bg-[#0a015b] border border-white shadow-lg z-50 text-white"
     >
       <div class="py-1 max-h-60 overflow-y-auto" id="country-list">
         <!-- Countries will be populated here -->
@@ -63,170 +63,128 @@
 </div>
 
 <script>
-  let locationData = {};
-  let currentRegion = "All Regions";
-
-  document.addEventListener("DOMContentLoaded", function () {
-    fetch("/api/locations")
-      .then((response) => response.json())
-      .then((data) => {
-        locationData = data;
-        populateRegions();
-        populateCountries();
-      })
-      .catch((error) => console.error("Error loading locations:", error));
-  });
-
-  function populateRegions() {
-    const regionList = document.getElementById("region-list");
-    regionList.innerHTML = "";
-
-    // "All Regions" option
-    const allOption = document.createElement("a");
-    allOption.href = "#";
-    allOption.className =
-      "block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100 hover:text-[#7F00FF]";
-    allOption.textContent = "All Regions";
-    allOption.onclick = (e) => {
-      e.preventDefault();
-      selectRegion("All Regions");
-    };
-    regionList.appendChild(allOption);
-
-    Object.keys(locationData)
-      .sort()
-      .forEach((region) => {
-        const a = document.createElement("a");
-        a.href = "#";
-        a.className =
-          "block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100 hover:text-[#7F00FF]";
-        a.textContent = region;
-        a.onclick = (e) => {
-          e.preventDefault();
-          selectRegion(region);
-        };
-        regionList.appendChild(a);
-      });
-  }
-
-  function populateCountries(region = null) {
-    const countryList = document.getElementById("country-list");
-    countryList.innerHTML = "";
-
-    let countries = [];
-    if (region && region !== "All Regions") {
-      countries = locationData[region] || [];
-    } else {
-      // Flatten all countries
-      Object.values(locationData).forEach((list) => countries.push(...list));
-    }
-
-    // Sort countries alphabetically
-    countries.sort();
-
-    // "All Countries" option
-    const allOption = document.createElement("a");
-    allOption.href = "#";
-    allOption.className =
-      "block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100 hover:text-[#7F00FF]";
-    allOption.textContent =
-      region && region !== "All Regions" ? `All ${region}` : "All Countries";
-    allOption.onclick = (e) => {
-      e.preventDefault();
-      selectCountry("All Countries");
-    };
-    countryList.appendChild(allOption);
-
-    countries.forEach((country) => {
-      const a = document.createElement("a");
-      a.href = "#";
-      a.className =
-        "block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100 hover:text-[#7F00FF]";
-      a.textContent = country;
-      a.onclick = (e) => {
-        e.preventDefault();
-        selectCountry(country);
-      };
-      countryList.appendChild(a);
-    });
-  }
-
-  function selectRegion(region) {
-    currentRegion = region;
-    const btn = document.getElementById("region-btn");
-    btn.querySelector("span").textContent =
-      region === "All Regions" ? "Region" : region;
-    toggleDropdown("region-dropdown");
-
-    // Reset country selection
-    document.getElementById("country-btn").querySelector("span").textContent =
-      "Country";
-
-    // Filter countries
-    populateCountries(region);
-
-    // Update Heatmap
-    if (window.updateHeatmap) {
-      if (region === "All Regions") {
-        window.updateHeatmap(null); // Show all
-      } else {
-        // Pass the list of countries in this region
-        const countriesInRegion = locationData[region] || [];
-        window.updateHeatmap(countriesInRegion);
-      }
-    }
-  }
-
-  function selectCountry(country) {
-    const btn = document.getElementById("country-btn");
-    btn.querySelector("span").textContent =
-      country === "All Countries" ? "Country" : country;
-    toggleDropdown("country-dropdown");
-
-    // Update charts if the function exists
-    if (window.updateImpactChart) {
-      window.updateImpactChart(
-        country === "All Countries" ? "Worldwide" : country
-      );
-    }
-
-    // Update Heatmap
-    if (window.updateHeatmap) {
-      if (country === "All Countries") {
-        if (currentRegion !== "All Regions") {
-          // If we are in a region, show all countries in that region
-          window.updateHeatmap(locationData[currentRegion]);
-        } else {
-          // Worldwide
-          window.updateHeatmap(null);
-        }
-      } else {
-        window.updateHeatmap(country);
-      }
-    }
-  }
+  // Global state
+  window.currentRegion = "All Regions";
+  window.currentCountry = "All Countries";
 
   function toggleDropdown(id) {
     const dropdown = document.getElementById(id);
-    const allDropdowns = document.querySelectorAll('[id$="-dropdown"]');
+    const isHidden = dropdown.classList.contains("hidden");
+    
+    // Close all dropdowns first
+    document.getElementById("region-dropdown").classList.add("hidden");
+    document.getElementById("country-dropdown").classList.add("hidden");
 
-    // Close other dropdowns
-    allDropdowns.forEach((d) => {
-      if (d.id !== id) d.classList.add("hidden");
-    });
-
-    dropdown.classList.toggle("hidden");
+    if (isHidden) {
+      dropdown.classList.remove("hidden");
+    }
   }
 
   // Close dropdowns when clicking outside
-  window.onclick = function (event) {
-    if (!event.target.closest("button")) {
-      const dropdowns = document.querySelectorAll('[id$="-dropdown"]');
-      dropdowns.forEach((d) => {
-        if (!d.classList.contains("hidden")) {
-          d.classList.add("hidden");
-        }
-      });
+  window.addEventListener("click", function (e) {
+    if (!e.target.closest(".relative")) {
+      document.getElementById("region-dropdown").classList.add("hidden");
+      document.getElementById("country-dropdown").classList.add("hidden");
     }
-  };
+  });
+
+  function selectRegion(region) {
+    window.currentRegion = region;
+    document.getElementById("region-btn-text").textContent = region === "All Regions" ? "Region" : region;
+    document.getElementById("region-dropdown").classList.add("hidden");
+    
+    // Reset country when region changes
+    window.currentCountry = "All Countries";
+    document.getElementById("country-btn-text").textContent = "Country";
+    
+    updateCharts();
+    fetchCountries(region);
+  }
+
+  function selectCountry(country) {
+    window.currentCountry = country;
+    document.getElementById("country-btn-text").textContent = country === "All Countries" ? "Country" : country;
+    document.getElementById("country-dropdown").classList.add("hidden");
+    
+    updateCharts();
+  }
+
+  function updateCharts() {
+    // Call update functions of other components if they exist
+    if (window.updateImpactChart) window.updateImpactChart(window.currentRegion, window.currentCountry);
+    if (window.updateHeatmap) window.updateHeatmap(window.currentRegion, window.currentCountry);
+    // Gender chart might update automatically or need a trigger. 
+    // The gender chart uses reason dropdown, but maybe it should also filter by country?
+    // The gender chart script I wrote uses `currentCountry` global variable in the text.
+    // I should probably trigger a re-render of gender chart if possible, but it listens to reason change.
+    // I'll add a trigger if I can access it.
+    const reasonSelect = document.getElementById("reason-select");
+    if (reasonSelect) {
+        // Trigger change event to refresh text with new country name
+        reasonSelect.dispatchEvent(new Event('change'));
+    }
+  }
+
+  function fetchRegions() {
+    fetch("/api/regions")
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById("region-list");
+        list.innerHTML = "";
+        
+        addOption(list, "All Regions", selectRegion);
+
+        data.forEach(region => {
+          addOption(list, region, selectRegion);
+        });
+      })
+      .catch(err => {
+          console.log("Using mock regions for now");
+          const list = document.getElementById("region-list");
+          const mockRegions = ["Africa", "Asia", "Europe", "Americas", "Oceania"];
+          addOption(list, "All Regions", selectRegion);
+          mockRegions.forEach(r => addOption(list, r, selectRegion));
+      });
+  }
+
+  function fetchCountries(region) {
+    let url = "/api/countries";
+    if (region && region !== "All Regions") {
+        url += `?region=${encodeURIComponent(region)}`;
+    }
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById("country-list");
+        list.innerHTML = "";
+        
+        addOption(list, "All Countries", selectCountry);
+
+        data.forEach(country => {
+          addOption(list, country, selectCountry);
+        });
+      })
+      .catch(err => {
+          console.log("Using mock countries");
+          const list = document.getElementById("country-list");
+          list.innerHTML = "";
+          addOption(list, "All Countries", selectCountry);
+          // Mock data for handling errors in fetching
+          ["Afghanistan", "Albania", "Algeria"].forEach(c => addOption(list, c, selectCountry));
+      });
+  }
+
+  function addOption(parent, text, callback) {
+    const div = document.createElement("div");
+    div.className = "px-4 py-2 hover:bg-white/20 cursor-pointer text-sm";
+    div.textContent = text;
+    div.onclick = () => callback(text);
+    parent.appendChild(div);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    fetchRegions();
+    fetchCountries();
+  });
 </script>

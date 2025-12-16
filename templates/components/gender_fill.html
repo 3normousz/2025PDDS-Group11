@@ -1,33 +1,30 @@
-<div class="flex h-full w-full max-w-full mx-auto px-4 md:px-0">
-    <div
-        class="bg-white p-4 md:p-6 mb-8 font-glacial border-2 border-purple-800 w-full"
-    >
-        <div
-            class="flex flex-col md:flex-row justify-between items-center mb-8 border-b-2 border-gray-200 pb-4"
-        >
-            <h2
-                class="text-xl md:text-2xl font-bold text-purple-800 uppercase tracking-wider mb-4 md:mb-0"
-            >
-                Gender Comparision in Violence Acceptance
-            </h2>
-            <div class="relative inline-block text-left w-full md:w-auto">
+<div class="h-full w-full">
+    <div class="bg-transparent p-4 font-glacial w-full h-full flex flex-col text-white">
+        <div class="flex-none flex flex-row justify-end items-center mb-2 pb-2">
+            <div class="relative inline-block text-left">
                 <label for="reason-select" class="sr-only">Select Reason</label>
                 <select
                     id="reason-select"
-                    class="block w-full bg-white border-2 border-purple-500 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-purple-700"
+                    class="block w-full bg-[#0a015b] border border-white text-white py-1 px-2 pr-8 rounded leading-tight focus:outline-none text-sm"
                 >
                     <option value="" disabled selected>Select a reason...</option>
                 </select>
             </div>
         </div>
 
-        <div class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
-            <!-- Heads Box-->
-            <div class="flex justify-center items-center space-x-4 md:space-x-8">
+        <div class="flex-1 min-h-0 flex flex-col md:flex-row gap-4 overflow-hidden">
+             <!-- Description Text (Left) -->
+             <div class="w-full md:w-1/3 flex flex-col justify-center text-left">
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-2 md:mb-4 font-glacial tracking-widest">GENDER DIFFERENCE</h2>
+                <p id="analysis-text" class="text-sm md:text-lg leading-relaxed text-white">Loading data...</p>
+            </div>
+
+            <!-- Heads Box (Right) -->
+            <div class="w-full md:w-2/3 flex justify-center items-center space-x-4 md:space-x-12">
                 <!-- Male Head -->
-                <div class="flex flex-col items-center p-2 md:p-4">
+                <div class="flex flex-col items-center p-2 h-full justify-center">
                     <svg
-                        class="w-24 h-24 md:w-[150px] md:h-[150px]"
+                        class="w-auto h-full max-h-[250px]"
                         viewBox="0 0 375 375"
                         xmlns="http://www.w3.org/2000/svg"
                     >
@@ -58,62 +55,52 @@
                     </svg>
                     <div
                         id="male-percentage-text"
-                        class="text-4xl font-bold mt-2 text-gray-700"
-                    >
+                        class="text-2xl md:text-4xl font-bold mt-2 text-white"
+                        >
                         --%
                     </div>
                 </div>
 
                 <!-- Female Head -->
-                <div class="flex flex-col items-center p-2 md:p-4">
+                <div class="flex flex-col items-center p-2 h-full justify-center">
                     <svg
-                        class="w-24 h-24 md:w-[150px] md:h-[150px]"
+                        class="w-auto h-full max-h-[250px]"
                         viewBox="0 0 375 375"
                         xmlns="http://www.w3.org/2000/svg"
                     >
-                    <defs>
-                        <clipPath id="female-fill-clip-dynamic">
-                        <rect
-                            id="female-fill-rect"
-                            x="0"
-                            y="375"
-                            width="375"
-                            height="0"
-                        />
-                        </clipPath>
-                    </defs>
+                        <defs>
+                            <clipPath id="female-fill-clip-dynamic">
+                                <rect id="female-fill-rect" x="0" y="375" width="375" height="0" />
+                            </clipPath>
+                        </defs>
 
-                    <!-- Background -->
-                    <g transform="translate(20, 0)">
-                        <path
+                        <!-- Background Head -->
+                        <g transform="translate(20, 0)">
+                            <path
                             d="M 216.554688 334.476562 C 217.15625 330.015625 225.320312 306.660156 232.878906 298.269531 C 240.4375 289.878906 245.351562 281.109375 274.753906 283.300781 C 304.160156 285.492188 311.945312 280.203125 314.289062 267.125 C 314.289062 267.125 312.699219 255.863281 311.339844 250.421875 C 309.980469 244.980469 314.289062 244.980469 314.289062 244.980469 C 314.289062 244.980469 323.054688 242.257812 320.710938 235.078125 C 318.367188 227.894531 314.289062 227.292969 314.289062 227.292969 C 314.289062 227.292969 324.566406 222.832031 324.039062 218.523438 C 323.507812 214.214844 317.234375 206.65625 323.28125 199.476562 C 329.328125 192.292969 337.113281 187.984375 333.03125 181.410156 C 328.953125 174.757812 308.542969 156.089844 306.351562 147.699219 C 304.160156 139.308594 305.367188 128.421875 309.296875 121.773438 C 313.230469 115.121094 295.089844 68.632812 295.089844 68.632812 L 289.796875 56.539062 C 289.796875 56.539062 290.554688 54.046875 289.570312 51.476562 C 288.585938 48.90625 280.046875 35.675781 276.117188 32.199219 C 272.183594 28.722656 247.46875 10.203125 229.78125 6.273438 C 212.09375 2.34375 184.65625 -4.234375 142.78125 3.78125 C 100.902344 11.792969 81.25 36.054688 81.25 36.054688 C 81.25 36.054688 76.640625 32.050781 72.40625 30.460938 C 68.777344 29.101562 63.109375 26.53125 49.730469 31.972656 C 36.351562 37.414062 30.835938 43.460938 30.835938 43.460938 C 30.835938 43.460938 21.160156 52.003906 16.320312 60.242188 C 11.484375 68.480469 11.03125 68.785156 7.402344 78.15625 C 3.773438 87.53125 1.429688 97.507812 1.050781 103.933594 C 0.675781 110.359375 0.675781 122.527344 7.703125 132.050781 C 12.390625 138.402344 21.914062 151.703125 29.699219 152.460938 C 40.964844 153.59375 44.894531 150.496094 44.894531 150.496094 C 44.894531 150.496094 49.203125 188.0625 59.859375 204.085938 C 70.519531 220.109375 92.363281 251.402344 117.835938 253.144531 C 117.835938 253.144531 121.917969 268.109375 116.25 283.90625 C 110.578125 299.703125 105.136719 311.949219 99.089844 319.507812 C 93.042969 327.066406 86.617188 334.851562 86.617188 334.851562 C 86.617188 334.851562 79.4375 346.945312 109.972656 329.5625 C 140.511719 312.253906 159.636719 314.972656 178.078125 334.398438 C 187.679688 344.527344 197.582031 368.640625 197.582031 368.640625 C 197.582031 368.640625 207.480469 384.96875 208.464844 364.9375 C 209.597656 344.980469 216.023438 338.933594 216.554688 334.476562 Z M 216.554688 334.476562"
                             fill="#fdeff9"
-                        />
-                    </g>
+                            />
+                        </g>
 
-                    <!-- Foreground -->
-                    <g
-                        transform="translate(20, 0)"
-                        clip-path="url(#female-fill-clip-dynamic)"
-                    >
-                        <path
-                            d="M 216.554688 334.476562 C 217.15625 330.015625 225.320312 306.660156 232.878906 298.269531 C 240.4375 289.878906 245.351562 281.109375 274.753906 283.300781 C 304.160156 285.492188 311.945312 280.203125 314.289062 267.125 C 314.289062 267.125 312.699219 255.863281 311.339844 250.421875 C 309.980469 244.980469 314.289062 244.980469 314.289062 244.980469 C 314.289062 244.980469 323.054688 242.257812 320.710938 235.078125 C 318.367188 227.894531 314.289062 227.292969 314.289062 227.292969 C 314.289062 227.292969 324.566406 222.832031 324.039062 218.523438 C 323.507812 214.214844 317.234375 206.65625 323.28125 199.476562 C 329.328125 192.292969 337.113281 187.984375 333.03125 181.410156 C 328.953125 174.757812 308.542969 156.089844 306.351562 147.699219 C 304.160156 139.308594 305.367188 128.421875 309.296875 121.773438 C 313.230469 115.121094 295.089844 68.632812 295.089844 68.632812 L 289.796875 56.539062 C 289.796875 56.539062 290.554688 54.046875 289.570312 51.476562 C 288.585938 48.90625 280.046875 35.675781 276.117188 32.199219 C 272.183594 28.722656 247.46875 10.203125 229.78125 6.273438 C 212.09375 2.34375 184.65625 -4.234375 142.78125 3.78125 C 100.902344 11.792969 81.25 36.054688 81.25 36.054688 C 81.25 36.054688 76.640625 32.050781 72.40625 30.460938 C 68.777344 29.101562 63.109375 26.53125 49.730469 31.972656 C 36.351562 37.414062 30.835938 43.460938 30.835938 43.460938 C 30.835938 43.460938 21.160156 52.003906 16.320312 60.242188 C 11.484375 68.480469 11.03125 68.785156 7.402344 78.15625 C 3.773438 87.53125 1.429688 97.507812 1.050781 103.933594 C 0.675781 110.359375 0.675781 122.527344 7.703125 132.050781 C 12.390625 138.402344 21.914062 151.703125 29.699219 152.460938 C 40.964844 153.59375 44.894531 150.496094 44.894531 150.496094 C 44.894531 150.496094 49.203125 188.0625 59.859375 204.085938 C 70.519531 220.109375 92.363281 251.402344 117.835938 253.144531 C 117.835938 253.144531 121.917969 268.109375 116.25 283.90625 C 110.578125 299.703125 105.136719 311.949219 99.089844 319.507812 C 93.042969 327.066406 86.617188 334.851562 86.617188 334.851562 C 86.617188 334.851562 79.4375 346.945312 109.972656 329.5625 C 140.511719 312.253906 159.636719 314.972656 178.078125 334.398438 C 187.679688 344.527344 197.582031 368.640625 197.582031 368.640625 C 197.582031 368.640625 207.480469 384.96875 208.464844 364.9375 C 209.597656 344.980469 216.023438 338.933594 216.554688 334.476562 Z M 216.554688 334.476562"
-                            fill="#9b14be"
-                        />
-                    </g>
+                        <!-- Foreground Head -->
+                        <g
+                            transform="translate(20, 0)"
+                            clip-path="url(#female-fill-clip-dynamic)"
+                        >
+                            <path
+                                d="M 216.554688 334.476562 C 217.15625 330.015625 225.320312 306.660156 232.878906 298.269531 C 240.4375 289.878906 245.351562 281.109375 274.753906 283.300781 C 304.160156 285.492188 311.945312 280.203125 314.289062 267.125 C 314.289062 267.125 312.699219 255.863281 311.339844 250.421875 C 309.980469 244.980469 314.289062 244.980469 314.289062 244.980469 C 314.289062 244.980469 323.054688 242.257812 320.710938 235.078125 C 318.367188 227.894531 314.289062 227.292969 314.289062 227.292969 C 314.289062 227.292969 324.566406 222.832031 324.039062 218.523438 C 323.507812 214.214844 317.234375 206.65625 323.28125 199.476562 C 329.328125 192.292969 337.113281 187.984375 333.03125 181.410156 C 328.953125 174.757812 308.542969 156.089844 306.351562 147.699219 C 304.160156 139.308594 305.367188 128.421875 309.296875 121.773438 C 313.230469 115.121094 295.089844 68.632812 295.089844 68.632812 L 289.796875 56.539062 C 289.796875 56.539062 290.554688 54.046875 289.570312 51.476562 C 288.585938 48.90625 280.046875 35.675781 276.117188 32.199219 C 272.183594 28.722656 247.46875 10.203125 229.78125 6.273438 C 212.09375 2.34375 184.65625 -4.234375 142.78125 3.78125 C 100.902344 11.792969 81.25 36.054688 81.25 36.054688 C 81.25 36.054688 76.640625 32.050781 72.40625 30.460938 C 68.777344 29.101562 63.109375 26.53125 49.730469 31.972656 C 36.351562 37.414062 30.835938 43.460938 30.835938 43.460938 C 30.835938 43.460938 21.160156 52.003906 16.320312 60.242188 C 11.484375 68.480469 11.03125 68.785156 7.402344 78.15625 C 3.773438 87.53125 1.429688 97.507812 1.050781 103.933594 C 0.675781 110.359375 0.675781 122.527344 7.703125 132.050781 C 12.390625 138.402344 21.914062 151.703125 29.699219 152.460938 C 40.964844 153.59375 44.894531 150.496094 44.894531 150.496094 C 44.894531 150.496094 49.203125 188.0625 59.859375 204.085938 C 70.519531 220.109375 92.363281 251.402344 117.835938 253.144531 C 117.835938 253.144531 121.917969 268.109375 116.25 283.90625 C 110.578125 299.703125 105.136719 311.949219 99.089844 319.507812 C 93.042969 327.066406 86.617188 334.851562 86.617188 334.851562 C 86.617188 334.851562 79.4375 346.945312 109.972656 329.5625 C 140.511719 312.253906 159.636719 314.972656 178.078125 334.398438 C 187.679688 344.527344 197.582031 368.640625 197.582031 368.640625 C 197.582031 368.640625 207.480469 384.96875 208.464844 364.9375 C 209.597656 344.980469 216.023438 338.933594 216.554688 334.476562 Z M 216.554688 334.476562"
+                                fill="#9b14be"
+                            />
+                        </g>
                     </svg>
                     <div
                         id="female-percentage-text"
-                        class="text-2xl md:text-4xl font-bold mt-2 text-gray-700"
+                        class="text-2xl md:text-4xl font-bold mt-2 text-white"
                         >
                         --%
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- Description Text -->
-        <div class="mt-10 text-lg text-gray-800">
-            <p id="analysis-text" class="leading-relaxed">Loading data...</p>
         </div>
     </div>
 </div>
@@ -192,14 +179,20 @@
       displayReason =
         displayReason.charAt(0).toLowerCase() + displayReason.slice(1);
 
+      // Determine location text
+      let locationText = "Worldwide";
+      if (typeof window.currentCountry !== 'undefined' && window.currentCountry !== 'All Countries') {
+          locationText = `In ${window.currentCountry}`;
+      } else if (typeof window.currentRegion !== 'undefined' && window.currentRegion !== 'All Regions') {
+          locationText = `In ${window.currentRegion}`;
+      }
+
       if (diff > 0) {
-        text = `Women show <span class="font-bold text-purple-700">${diff}% higher</span> agreement with "It is acceptable for a man to beat his wife <span class="font-bold text-purple-700">${displayReason}.</span>"`;
+        text = `${locationText}, <span class="font-bold text-purple-300">women show ${diff}% higher</span> acceptance towards domestic violence than men`;
       } else if (diff < 0) {
-        text = `Men show <span class="font-bold text-blue-700">${Math.abs(
-          diff
-        )}% higher</span> agreement with "It is acceptable for a man to beat his wife ${displayReason}."`;
+        text = `${locationText}, <span class="font-bold text-blue-300">men show ${Math.abs(diff)}% higher</span> acceptance towards domestic violence than women`;
       } else {
-        text = `Men and Women show <span class="font-bold text-gray-700">equal</span> agreement with "It is acceptable for a man to beat his wife <span class="font-bold text-purple-700">${displayReason}.</span>"`;
+        text = `${locationText}, men and women show <span class="font-bold text-gray-300">equal</span> acceptance towards domestic violence`;
       }
 
       analysisText.innerHTML = text;

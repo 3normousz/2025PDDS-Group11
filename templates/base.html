@@ -11,20 +11,27 @@
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   </head>
 
-  <body class="bg-white">
-    <!-- Hook Bar -->
-    <div class="">
-      <h1 class="text-4xl font-bold">{% block hook %}{% endblock %}</h1>
+  <body class="w-full flex flex-col min-h-screen lg:h-screen lg:overflow-hidden font-glacial">
+    <!-- Top Section -->
+    <div class="bg-[#0a015b] text-white flex-none w-full flex flex-col">
+        <!-- Header -->
+        <div class="text-center py-2 font-bold text-xl uppercase tracking-wider">
+            Domestic Violence Against Women Dashboard
+        </div>
+        <!-- Hook -->
+        <div class="w-full pb-2">
+            {% block top_content %}{% endblock %}
+        </div>
     </div>
 
-    <!-- Dropdown Btns -->
-    <div class="flex justify-center gap-4 mb-6">
-      {% block dropdowns %}{% endblock %}
+    <!-- Middle Section -->
+    <div class="bg-white text-black w-full px-4 py-2 lg:flex-1 lg:min-h-0">
+        {% block middle_content %}{% endblock %}
     </div>
 
-    <!-- Content Grid -->
-    <div class="grid grid-cols-1 gap-4 px-4 xl:grid-cols-3 md:px-0 md:mr-6 md:ml-6">
-      {% block content %}{% endblock %}
+    <!-- Bottom Section -->
+    <div class="bg-[#0a015b] text-white w-full px-4 py-2 lg:flex-1 lg:min-h-0">
+        {% block bottom_content %}{% endblock %}
     </div>
   </body>
 </html>

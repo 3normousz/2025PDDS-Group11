@@ -6,54 +6,67 @@
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-geo-projection@4"></script>
 
-<div class="flex h-full w-full max-w-full mx-auto px-4 md:px-0">
-  <div class="bg-white p-4 md:p-6 mb-8 font-glacial border-2 border-purple-800 w-full">
-    <div class="mb-8 border-b-2 border-gray-200 pb-4">
-      <h2 class="text-xl md:text-2xl font-bold text-purple-800 uppercase tracking-wider">
-        Worldwide Violence Acceptance Heat Map
-      </h2>
+<div class="h-full w-full">
+  <div class="bg-white p-4 font-glacial w-full h-full flex flex-col md:flex-row gap-4">
+    <!-- What happen? Section -->
+    <div class="w-full md:w-1/4 flex flex-col justify-center">
+        <h2 class="text-3xl md:text-5xl font-bold mb-2 md:mb-4">What<br>happen?</h2>
+        <p class="text-sm md:text-lg italic text-gray-700">
+            Violence acceptance rate is the percentage of people who say that hitting or beating a wife is acceptable in at least one situation.
+        </p>
     </div>
-    <div id="worldHeatmap" class="w-full relative">
-      <div class="absolute top-2 right-2 flex flex-col gap-1 z-10">
-        <button
-          class="w-8 h-8 bg-white border border-gray-300 rounded cursor-pointer flex items-center justify-center font-bold shadow-md hover:bg-gray-100 hover:shadow-lg transition-all"
-          id="zoom-in"
-          title="Zoom in"
-        >
-          +
-        </button>
-        <button
-          class="w-8 h-8 bg-white border border-gray-300 rounded cursor-pointer flex items-center justify-center font-bold shadow-md hover:bg-gray-100 hover:shadow-lg transition-all"
-          id="zoom-out"
-          title="Zoom out"
-        >
-          -
-        </button>
-        <button
-          class="w-8 h-8 bg-white border border-gray-300 rounded cursor-pointer flex items-center justify-center font-bold shadow-md hover:bg-gray-100 hover:shadow-lg transition-all"
-          id="zoom-reset"
-          title="Reset zoom"
-        >
-          ⟲
-        </button>
-      </div>
-    </div>
-    <div class="flex items-center justify-center mt-4 gap-2">
-      <span class="text-sm text-gray-600">0%</span>
-      <div
-        class="flex-1 h-4 rounded"
-        style="
-          background: linear-gradient(
-            to right,
-            #fdeff9,
-            #ec38bc,
-            #7303c0,
-            #03001e
-          );
-          max-width: 300px;
-        "
-      ></div>
-      <span class="text-sm text-gray-600" id="maxValue">50%</span>
+
+    <!-- Map Section -->
+    <div class="flex-1 flex flex-col">
+        <div class="flex-none mb-2 pb-2">
+            <h2 class="text-lg font-bold text-black uppercase tracking-wider">
+                WORLDMAP VIOLENCE ACCEPTANCE RATE
+            </h2>
+        </div>
+        <div class="flex-1 min-h-0 relative flex flex-row">
+            <div id="worldHeatmap" class="flex-1 h-full relative min-h-0">
+                <div class="absolute top-2 right-2 flex flex-col gap-1 z-10">
+                <button
+                    class="w-6 h-6 bg-white border border-gray-300 rounded cursor-pointer flex items-center justify-center font-bold shadow-md hover:bg-gray-100 hover:shadow-lg transition-all text-sm"
+                    id="zoom-in"
+                    title="Zoom in"
+                >
+                    +
+                </button>
+                <button
+                    class="w-6 h-6 bg-white border border-gray-300 rounded cursor-pointer flex items-center justify-center font-bold shadow-md hover:bg-gray-100 hover:shadow-lg transition-all text-sm"
+                    id="zoom-out"
+                    title="Zoom out"
+                >
+                    -
+                </button>
+                <button
+                    class="w-6 h-6 bg-white border border-gray-300 rounded cursor-pointer flex items-center justify-center font-bold shadow-md hover:bg-gray-100 hover:shadow-lg transition-all text-sm"
+                    id="zoom-reset"
+                    title="Reset zoom"
+                >
+                    ⟲
+                </button>
+                </div>
+            </div>
+            <div class="flex-none flex flex-col items-center justify-center ml-2 gap-2">
+                <span class="text-xs text-gray-600" id="maxValue">50%</span>
+                <div
+                class="w-3 flex-1 rounded"
+                style="
+                    background: linear-gradient(
+                    to bottom,
+                    #0a015b,
+                    #7303c0,
+                    #ec38bc,
+                    #fdeff9
+                    );
+                    max-height: 300px;
+                "
+                ></div>
+                <span class="text-xs text-gray-600">0%</span>
+            </div>
+        </div>
     </div>
   </div>
 </div>

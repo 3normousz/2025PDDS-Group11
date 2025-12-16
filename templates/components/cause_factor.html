@@ -1,77 +1,105 @@
-<div class="flex h-full w-full max-w-full mx-auto px-4 md:px-0">
-    <div class="bg-white p-2 md:p-4 mb-2 font-glacial border-2 border-purple-800 w-full">
-        <div class="mb-8 border-b-2 border-gray-200 pb-4">
-            <h2 class="text-xl md:text-2xl font-bold text-purple-800 uppercase tracking-wider">
-                Cause/Factor on Violence Acceptance
+<div class="h-full w-full">
+    <div class="bg-white p-4 font-glacial w-full h-full flex flex-col">
+        <div class="flex-none mb-2 pb-2">
+            <h2 class="text-lg font-bold text-black uppercase tracking-wider">
+                DOMESTIC VIOLENCE ACCEPTANCE VS. HIGHER EDUCATION ATTAINMENT
             </h2>
         </div>
-        <div id="impact-chart" class="w-full h-[500px]"></div>
+        <div class="flex-1 min-h-0 relative">
+            <div id="impact-chart" class="w-full h-full"></div>
+        </div>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        let impactData = {};
+        // Initial fetch with default parameters
+        fetchData(window.currentRegion || "All Regions", window.currentCountry || "All Countries");
+    });
 
-        // Fetch data
-        fetch('/api/impact-data')
+    // Expose update function globally
+    window.updateImpactChart = function(region, country) {
+        fetchData(region, country);
+    };
+
+    function fetchData(region, country) {
+        let url = '/api/education-impact';
+        const params = new URLSearchParams();
+        if (region && region !== "All Regions") params.append("region", region);
+        if (country && country !== "All Countries") params.append("country", country);
+        
+        if (params.toString()) url += "?" + params.toString();
+
+        fetch(url)
             .then(response => response.json())
             .then(data => {
-                impactData = data;
-                renderChart('Worldwide');
-                
-                // Listen for country changes from the global dropdown
-                window.updateImpactChart = function(country) {
-                    renderChart(country);
-                };
-            });
-
-        function renderChart(country) {
-            const data = impactData[country] || impactData['Worldwide'];
-            if (!data) return;
-
-            const trace = {
-                x: data.impact,
-                y: data.demo_question,
-                type: 'bar',
-                orientation: 'h',
-                marker: {
-                    color: data.color
+                if (data.error) {
+                    console.error("Error:", data.error);
+                    return;
                 }
-            };
+                renderChart(data);
+            })
+            .catch(err => console.error(err));
+    }
 
-            const layout = {
+    function renderChart(data) {
+        // Data format from API: { categories: [...], values: [...], colors: [...] }
+        const categories = data.categories;
+        const values = data.values;
+        const colors = data.colors;
+
+        const trace = {
+            x: categories,
+            y: values,
+            type: 'bar',
+            marker: {
+                color: colors,
+                // cornerradius: 5
+            },
+            text: values.map(v => Math.round(v)),
+            textposition: 'inside',
+            textfont: {
+                size: 22,
+                color: 'black',
+                family: 'glacial-indifference, sans-serif'
+            },
+            width: 0.55,
+            hovertemplate: "%{x}<br>%{y}%<extra></extra>"
+        };
+
+        const layout = {
+            margin: { t: 20, r: 40, b: 80, l: 80 },
+            xaxis: {
                 title: {
-                    text: '',
-                    font: { size: 24, color: "#7C2AE8", family: "glacial-indifference, sans-serif" }
+                    text: 'Population with Higher Education (%)',
+                    font: { family: 'glacial-indifference, sans-serif', size: 14, color: 'black' }
                 },
-                margin: { t: 20, r: 20, b: 40, l: 100 },
-                xaxis: {
-                    showgrid: true,
-                    gridcolor: "#E0E0E0",
-                    title: "",
-                    fixedrange: true
+                fixedrange: true,
+                tickfont: { color: 'black', size: 12 },
+                showgrid: false
+            },
+            yaxis: {
+                title: {
+                    text: 'Avg Violence Acceptance Rate',
+                    font: { family: 'glacial-indifference, sans-serif', size: 14, color: 'black' }
                 },
-                yaxis: {
-                    autorange: "reversed",
-                    title: "",
-                    fixedrange: true,
-                    automargin: true,
-                    ticksuffix: "  "
-                },
-                font: {
-                    family: "glacial-indifference, sans-serif",
-                    color: "black",
-                    size: 14
-                },
-                plot_bgcolor: "white",
-                showlegend: false,
-                autosize: true
-            };
+                fixedrange: true,
+                tickfont: { color: 'black', size: 12 },
+                showgrid: false,
+                zeroline: false
+            },
+            bargap: 0.15,
+            paper_bgcolor: 'white',
+            plot_bgcolor: 'white',
+            font: {
+                family: 'glacial-indifference, sans-serif',
+                color: 'black'
+            },
+            showlegend: false
+        };
+        
+        const config = { responsive: true, displayModeBar: false };
 
-            const config = { responsive: true, displayModeBar: false };
-
-            Plotly.newPlot('impact-chart', [trace], layout, config);
-        }
-    });
+        Plotly.newPlot('impact-chart', [trace], layout, config);
+    }
 </script>

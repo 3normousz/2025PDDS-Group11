@@ -7,12 +7,13 @@ const svg = d3
   .attr("width", width)
   .attr("height", height)
   .attr("viewBox", `0 0 ${width} ${height}`)
+  .attr("preserveAspectRatio", "xMidYMid meet")
   .style("width", "100%")
-  .style("height", "auto");
+  .style("height", "100%");
 
 const g = svg.append("g");
 
-// Add zoom behavior
+// Zoom behavior
 const zoom = d3
   .zoom()
   .scaleExtent([1, 8])
@@ -32,7 +33,7 @@ const path = d3.geoPath().projection(projection);
 const colorScale = d3
   .scaleLinear()
   .domain([0, 15, 30, 50])
-  .range(["#fdeff9", "#ec38bc", "#7303c0", "#03001e"])
+  .range(["#fdeff9", "#ec38bc", "#7303c0", "#0a015b"])
   .clamp(true);
 
 const tooltip = d3.select("#tooltip");
@@ -45,8 +46,11 @@ Promise.all([
     const countries = topojson.feature(topology, topology.objects.countries);
 
     // Get max value for color scale
-    const maxValue = Math.max(...Object.values(violenceData));
+    const rawMaxValue = Math.max(...Object.values(violenceData));
     const minValue = Math.min(...Object.values(violenceData));
+
+    // Round up to nearest 10
+    const maxValue = Math.ceil(rawMaxValue / 10) * 10;
 
     // Update color scale domain dynamically
     colorScale.domain([
@@ -56,7 +60,7 @@ Promise.all([
       maxValue,
     ]);
 
-    d3.select("#maxValue").text(`${maxValue.toFixed(1)}%`);
+    d3.select("#maxValue").text(`${maxValue}%`);
 
     // Create a mapping from country names to ISO codes
     const countryNameToId = {
@@ -210,31 +214,46 @@ Promise.all([
         tooltip.style("opacity", 0);
       });
     // Expose update function globally
-    window.updateHeatmap = function(selectedCountry) {
-      g.selectAll(".country")
-        .transition().duration(750)
-        .style("opacity", 1)
-        .attr("fill", (d) => {
-          const countryName = Object.keys(countryNameToId).find(
-            (name) => countryNameToId[name] === d.id
-          );
-          
-          // Determine if this country is "selected"
-          let isSelected = false;
-          if (!selectedCountry || selectedCountry === 'All Countries') {
-              isSelected = true;
-          } else if (Array.isArray(selectedCountry)) {
-              isSelected = selectedCountry.includes(countryName);
-          } else {
-              isSelected = countryName === selectedCountry;
-          }
+    window.updateHeatmap = function(region, country) {
+        const applyUpdate = (selectedCountry) => {
+          g.selectAll(".country")
+            .transition().duration(750)
+            .style("opacity", 1)
+            .attr("fill", (d) => {
+              const countryName = Object.keys(countryNameToId).find(
+                (name) => countryNameToId[name] == d.id
+              );
+              
+              // Determine if this country is "selected"
+              let isSelected = false;
+              if (!selectedCountry || selectedCountry === 'All Countries') {
+                  isSelected = true;
+              } else if (Array.isArray(selectedCountry)) {
+                  isSelected = selectedCountry.includes(countryName);
+              } else {
+                  isSelected = countryName === selectedCountry;
+              }
 
-          // If selected and has data, show color. Otherwise grey.
-          if (isSelected && countryName && violenceData[countryName]) {
-            return colorScale(violenceData[countryName]);
-          }
-          return "#e0e0e0";
-        });
+              // If selected and has data, show color. Otherwise grey.
+              if (isSelected && countryName && violenceData[countryName]) {
+                return colorScale(violenceData[countryName]);
+              }
+              return "#e0e0e0";
+            });
+        };
+
+        if (country && country !== "All Countries") {
+            applyUpdate(country);
+        } else if (region && region !== "All Regions") {
+            fetch(`/api/countries?region=${encodeURIComponent(region)}`)
+                .then(res => res.json())
+                .then(countries => {
+                    applyUpdate(countries);
+                })
+                .catch(err => console.error("Error fetching countries for region:", err));
+        } else {
+            applyUpdate(null);
+        }
     };
   })
   .catch((error) => {
