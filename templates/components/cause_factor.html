@@ -1,7 +1,7 @@
 <div class="h-full w-full">
     <div class="bg-white p-4 font-glacial w-full h-full flex flex-col">
         <div class="flex-none mb-2 pb-2">
-            <h2 class="text-lg font-bold text-black uppercase tracking-wider">
+            <h2 class="text-center text-sm md:text-base md:[@media(min-height:800px)]:text-lg font-bold text-black uppercase tracking-wider">
                 DOMESTIC VIOLENCE ACCEPTANCE VS. HIGHER EDUCATION ATTAINMENT
             </h2>
         </div>
@@ -56,10 +56,11 @@
                 color: colors,
                 // cornerradius: 5
             },
-            text: values.map(v => Math.round(v)),
+            text: values.map(v => '<b>' + Math.round(v) + '</b>'),
             textposition: 'inside',
+            insidetextanchor: 'middle',
             textfont: {
-                size: 22,
+                size: 30,
                 color: 'black',
                 family: 'glacial-indifference, sans-serif'
             },
@@ -71,7 +72,7 @@
             margin: { t: 20, r: 40, b: 80, l: 80 },
             xaxis: {
                 title: {
-                    text: 'Population with Higher Education (%)',
+                    text: '<b>Population with Higher Education (%)</b>',
                     font: { family: 'glacial-indifference, sans-serif', size: 14, color: 'black' }
                 },
                 fixedrange: true,
@@ -80,7 +81,7 @@
             },
             yaxis: {
                 title: {
-                    text: 'Avg Violence Acceptance Rate',
+                    text: '<b>Avg Violence Acceptance Rate</b>',
                     font: { family: 'glacial-indifference, sans-serif', size: 14, color: 'black' }
                 },
                 fixedrange: true,

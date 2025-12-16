@@ -8,7 +8,16 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    fetch("/api/edu-residence?t=" + new Date().getTime())
+    // Initial load
+    updateEduResidenceChart(window.currentRegion || "All Regions", window.currentCountry || "All Countries");
+  });
+
+  window.updateEduResidenceChart = function(region, country) {
+    let url = "/api/edu-residence?t=" + new Date().getTime();
+    if (region && region !== "All Regions") url += `&region=${encodeURIComponent(region)}`;
+    if (country && country !== "All Countries") url += `&country=${encodeURIComponent(country)}`;
+
+    fetch(url)
       .then((response) => response.json())
       .then((traces) => {
         if (traces.error) {
@@ -16,12 +25,28 @@
           return;
         }
 
+        // Force black text in hover labels for all traces
+        traces.forEach(trace => {
+            if (!trace.hoverlabel) trace.hoverlabel = {};
+            trace.hoverlabel.font = { family: "glacial-indifference, sans-serif", color: "black" };
+        });
+
+        // Determine location text
+        let locationText = "WORLDWIDE";
+        if (country && country !== "All Countries") {
+            locationText = `IN ${country.toUpperCase()}`;
+        } else if (region && region !== "All Regions") {
+            locationText = `IN ${region.toUpperCase()}`;
+        }
+
         const layout = {
           title: {
-            text: "VIOLENCE ACCEPTANCE RATE OF WOMEN WORLDWIDE/IN...",
+            text: `<b>VIOLENCE ACCEPTANCE RATE OF WOMEN ${locationText}</b>`,
+            x: 0.5,
+            xanchor: 'center',
             font: {
               family: "glacial-indifference, sans-serif",
-              size: 14,
+              size: 18,
               color: "#ffffff",
             },
           },
@@ -37,7 +62,12 @@
             fixedrange: true,
             showgrid: false,
             zeroline: false,
-            tickfont: { color: "#ffffff" }
+            tickfont: { color: "#ffffff" },
+            tickprefix: "<b>",
+            ticksuffix: "</b>",
+            ticks: "outside",
+            ticklen: 10,
+            tickcolor: "rgba(0,0,0,0)"
           },
           yaxis: {
             title: {
@@ -48,12 +78,14 @@
                 color: "#ffffff",
               },
             },
-            range: [0, 80],
+            range: [0, 50],
             fixedrange: true,
             showgrid: true,
             gridcolor: "#444",
             zeroline: false,
-            tickfont: { color: "#ffffff" }
+            tickfont: { color: "#ffffff" },
+            tickprefix: "<b>",
+            ticksuffix: "</b>"
           },
           plot_bgcolor: "rgba(0,0,0,0)",
           paper_bgcolor: "rgba(0,0,0,0)",
@@ -66,6 +98,11 @@
               title: { text: "" },
               font: { color: "white" }
           },
+          hoverlabel: {
+            font: {
+                color: "black",
+            }
+          },
           margin: { t: 40, r: 20, b: 40, l: 40 },
         };
 
@@ -77,5 +114,5 @@
         Plotly.newPlot("edu-residence-chart", traces, layout, config);
       })
       .catch((error) => console.error("Error:", error));
-  });
+  };
 </script>

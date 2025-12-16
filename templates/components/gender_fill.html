@@ -1,5 +1,6 @@
 <div class="h-full w-full">
     <div class="bg-transparent p-4 font-glacial w-full h-full flex flex-col text-white">
+        <!--
         <div class="flex-none flex flex-row justify-end items-center mb-2 pb-2">
             <div class="relative inline-block text-left">
                 <label for="reason-select" class="sr-only">Select Reason</label>
@@ -11,12 +12,13 @@
                 </select>
             </div>
         </div>
+        -->
 
-        <div class="flex-1 min-h-0 flex flex-col md:flex-row gap-4 overflow-hidden">
+        <div class="flex-1 min-h-0 flex flex-col lg:flex-row gap-4 overflow-hidden">
              <!-- Description Text (Left) -->
-             <div class="w-full md:w-1/3 flex flex-col justify-center text-left">
-                <h2 class="text-xl md:text-2xl font-bold text-white mb-2 md:mb-4 font-glacial tracking-widest">GENDER DIFFERENCE</h2>
-                <p id="analysis-text" class="text-sm md:text-lg leading-relaxed text-white">Loading data...</p>
+             <div class="w-full lg:w-1/3 flex flex-col justify-center text-left">
+                <h2 class="text-lg md:text-xl md:[@media(min-height:800px)]:text-2xl font-bold text-white mb-2 md:mb-4 font-glacial tracking-widest">GENDER DIFFERENCE</h2>
+                <p id="analysis-text" class="text-xs md:text-sm md:[@media(min-height:800px)]:text-lg leading-relaxed text-white">Loading data...</p>
             </div>
 
             <!-- Heads Box (Right) -->
@@ -108,7 +110,7 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const reasonSelect = document.getElementById("reason-select");
+    // const reasonSelect = document.getElementById("reason-select");
     const maleRect = document.getElementById("male-fill-rect");
     const femaleRect = document.getElementById("female-fill-rect");
     const maleText = document.getElementById("male-percentage-text");
@@ -116,37 +118,59 @@
     const analysisText = document.getElementById("analysis-text");
 
     let chartData = {};
+    // Hardcoded reason as requested
+    const TARGET_REASON = "... for at least one specific reason";
 
-    // Fetch data from API
-    fetch("/api/reason-gender")
-      .then((response) => response.json())
-      .then((data) => {
-        chartData = data;
-        populateDropdown(data);
-        // Select first option by default
-        const firstReason = Object.keys(data)[0];
-        if (firstReason) {
-          reasonSelect.value = firstReason;
-          updateChart(firstReason);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        analysisText.textContent = "Error loading data.";
-      });
+    // Initial fetch
+    fetchGenderData();
 
-    function populateDropdown(data) {
-      while (reasonSelect.options.length > 1) {
-        reasonSelect.remove(1);
-      }
+    // Listen for custom event from dropdowns.html
+    // reasonSelect.addEventListener("change", function (e) {
+    //     if (chartData[this.value]) {
+    //         updateChart(this.value);
+    //     }
+    // });
 
-      Object.keys(data).forEach((reason) => {
-        const option = document.createElement("option");
-        option.value = reason;
-        option.textContent = reason;
-        reasonSelect.appendChild(option);
-      });
+    // Expose update function
+    window.updateGenderChart = function(region, country) {
+        fetchGenderData(region, country);
+    };
+
+    function fetchGenderData(region, country) {
+        let url = "/api/reason-gender";
+        const params = new URLSearchParams();
+        if (region && region !== "All Regions") params.append("region", region);
+        if (country && country !== "All Countries") params.append("country", country);
+        
+        if (params.toString()) url += "?" + params.toString();
+
+        fetch(url)
+            .then((response) => response.json())
+            .then((data) => {
+                chartData = data;
+                
+                // Always use the target reason
+                if (data[TARGET_REASON]) {
+                    updateChart(TARGET_REASON);
+                } else {
+                    // Fallback if exact string match fails (e.g. different spacing)
+                    const key = Object.keys(data).find(k => k.includes("at least one specific reason"));
+                    if (key) {
+                        updateChart(key);
+                    } else {
+                        // Fallback to first key
+                        const firstReason = Object.keys(data)[0];
+                        if (firstReason) updateChart(firstReason);
+                    }
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+                analysisText.textContent = "Error loading data.";
+            });
     }
+
+    // function populateDropdown(data) { ... } // Removed as dropdown is hidden
 
     function updateChart(reason) {
       const data = chartData[reason];
@@ -198,8 +222,8 @@
       analysisText.innerHTML = text;
     }
 
-    reasonSelect.addEventListener("change", function () {
-      updateChart(this.value);
-    });
+    // reasonSelect.addEventListener("change", function () {
+    //   updateChart(this.value);
+    // });
   });
 </script>

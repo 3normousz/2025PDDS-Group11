@@ -110,18 +110,16 @@
   }
 
   function updateCharts() {
-    // Call update functions of other components if they exist
-    if (window.updateImpactChart) window.updateImpactChart(window.currentRegion, window.currentCountry);
-    if (window.updateHeatmap) window.updateHeatmap(window.currentRegion, window.currentCountry);
-    // Gender chart might update automatically or need a trigger. 
-    // The gender chart uses reason dropdown, but maybe it should also filter by country?
-    // The gender chart script I wrote uses `currentCountry` global variable in the text.
-    // I should probably trigger a re-render of gender chart if possible, but it listens to reason change.
-    // I'll add a trigger if I can access it.
-    const reasonSelect = document.getElementById("reason-select");
-    if (reasonSelect) {
-        // Trigger change event to refresh text with new country name
-        reasonSelect.dispatchEvent(new Event('change'));
+    // Only update the 3rd (Gender Diff) and 4th (Edu Diff) graphs
+    
+    // 4th Graph: Edu Residence Chart
+    if (window.updateEduResidenceChart) {
+        window.updateEduResidenceChart(window.currentRegion, window.currentCountry);
+    }
+
+    // 3rd Graph: Gender Diff
+    if (window.updateGenderChart) {
+        window.updateGenderChart(window.currentRegion, window.currentCountry);
     }
   }
 

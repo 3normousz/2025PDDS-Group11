@@ -26,7 +26,7 @@ svg.call(zoom);
 const projection = d3
   .geoNaturalEarth1()
   .scale(150)
-  .translate([width / 2, height / 2]);
+  .translate([width / 2 - 50, height / 2]);
 
 const path = d3.geoPath().projection(projection);
 
@@ -60,7 +60,7 @@ Promise.all([
       maxValue,
     ]);
 
-    d3.select("#maxValue").text(`${maxValue}%`);
+    // d3.select("#maxValue").text(`${maxValue}%`);
 
     // Create a mapping from country names to ISO codes
     const countryNameToId = {
