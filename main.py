@@ -371,11 +371,11 @@ def education_impact_api():
         # Logic from new new code.py: min_val = group_avg[value_col].min()
         # colors = ["#B9A6FF" if v == min_val else "#D5D3D2" for v in group_avg[value_col]]
         
-        # However, we want to ensure the logic is robust if data is missing
+        # Ensure the logic is robust if data is missing
         values = group_avg[value_col].tolist()
         if values:
             min_val = min(values)
-            colors = ["#B9A6FF" if v == min_val else "#D5D3D2" for v in values]
+            colors = ["#bb99ff" if v == min_val else "#d1d0d0" for v in values]
         else:
             colors = []
 

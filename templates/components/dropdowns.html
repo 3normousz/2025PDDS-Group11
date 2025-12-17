@@ -8,8 +8,9 @@
       class="inline-flex justify-between items-center w-40 px-4 py-1 bg-[#0a015b] border border-white text-white font-bold text-sm uppercase tracking-wider hover:bg-white/10 focus:outline-none"
     >
       <span class="truncate" id="region-btn-text">Region</span>
+      <!-- Dropdown Arrow -->
       <svg
-        class="-mr-1 ml-2 h-5 w-5 fill-current shrink-0"
+        class="-mr-1 ml-2 h-5 w-5 fill-current text-[#bb99ff] shrink-0"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
       >
@@ -39,8 +40,9 @@
       class="inline-flex justify-between items-center w-40 px-4 py-1 bg-[#0a015b] border border-white text-white font-bold text-sm uppercase tracking-wider hover:bg-white/10 focus:outline-none"
     >
       <span class="truncate" id="country-btn-text">Country</span>
+      <!-- Dropdown Arrow -->
       <svg
-        class="-mr-1 ml-2 h-5 w-5 fill-current shrink-0"
+        class="-mr-1 ml-2 h-5 w-5 fill-current text-[#bb99ff] shrink-0"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
       >
@@ -70,7 +72,7 @@
   function toggleDropdown(id) {
     const dropdown = document.getElementById(id);
     const isHidden = dropdown.classList.contains("hidden");
-    
+
     // Close all dropdowns first
     document.getElementById("region-dropdown").classList.add("hidden");
     document.getElementById("country-dropdown").classList.add("hidden");
@@ -90,86 +92,93 @@
 
   function selectRegion(region) {
     window.currentRegion = region;
-    document.getElementById("region-btn-text").textContent = region === "All Regions" ? "Region" : region;
+    document.getElementById("region-btn-text").textContent =
+      region === "All Regions" ? "Region" : region;
     document.getElementById("region-dropdown").classList.add("hidden");
-    
+
     // Reset country when region changes
     window.currentCountry = "All Countries";
     document.getElementById("country-btn-text").textContent = "Country";
-    
+
     updateCharts();
     fetchCountries(region);
   }
 
   function selectCountry(country) {
     window.currentCountry = country;
-    document.getElementById("country-btn-text").textContent = country === "All Countries" ? "Country" : country;
+    document.getElementById("country-btn-text").textContent =
+      country === "All Countries" ? "Country" : country;
     document.getElementById("country-dropdown").classList.add("hidden");
-    
+
     updateCharts();
   }
 
   function updateCharts() {
     // Only update the 3rd (Gender Diff) and 4th (Edu Diff) graphs
-    
+
     // 4th Graph: Edu Residence Chart
     if (window.updateEduResidenceChart) {
-        window.updateEduResidenceChart(window.currentRegion, window.currentCountry);
+      window.updateEduResidenceChart(
+        window.currentRegion,
+        window.currentCountry
+      );
     }
 
     // 3rd Graph: Gender Diff
     if (window.updateGenderChart) {
-        window.updateGenderChart(window.currentRegion, window.currentCountry);
+      window.updateGenderChart(window.currentRegion, window.currentCountry);
     }
   }
 
   function fetchRegions() {
     fetch("/api/regions")
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         const list = document.getElementById("region-list");
         list.innerHTML = "";
-        
+
         addOption(list, "All Regions", selectRegion);
 
-        data.forEach(region => {
+        data.forEach((region) => {
           addOption(list, region, selectRegion);
         });
       })
-      .catch(err => {
-          console.log("Using mock regions for now");
-          const list = document.getElementById("region-list");
-          const mockRegions = ["Africa", "Asia", "Europe", "Americas", "Oceania"];
-          addOption(list, "All Regions", selectRegion);
-          mockRegions.forEach(r => addOption(list, r, selectRegion));
+      .catch((err) => {
+        console.log("Using mock regions for now");
+        const list = document.getElementById("region-list");
+        const mockRegions = ["Africa", "Asia", "Europe", "Americas", "Oceania"];
+        addOption(list, "All Regions", selectRegion);
+        mockRegions.forEach((r) => addOption(list, r, selectRegion));
       });
   }
 
   function fetchCountries(region) {
     let url = "/api/countries";
     if (region && region !== "All Regions") {
-        url += `?region=${encodeURIComponent(region)}`;
+      url += `?region=${encodeURIComponent(region)}`;
     }
 
     fetch(url)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         const list = document.getElementById("country-list");
         list.innerHTML = "";
-        
+
         addOption(list, "All Countries", selectCountry);
 
-        data.forEach(country => {
+        data.forEach((country) => {
           addOption(list, country, selectCountry);
         });
       })
-      .catch(err => {
-          console.log("Using mock countries");
-          const list = document.getElementById("country-list");
-          list.innerHTML = "";
-          addOption(list, "All Countries", selectCountry);
-          // Mock data for handling errors in fetching
-          ["Afghanistan", "Albania", "Algeria"].forEach(c => addOption(list, c, selectCountry));
+      .catch((err) => {
+        console.log("Using mock countries");
+        const list = document.getElementById("country-list");
+        list.innerHTML = "";
+        addOption(list, "All Countries", selectCountry);
+        // Mock data for handling errors in fetching
+        ["Afghanistan", "Albania", "Algeria"].forEach((c) =>
+          addOption(list, c, selectCountry)
+        );
       });
   }
 
