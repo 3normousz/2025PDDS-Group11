@@ -2,7 +2,7 @@
     <div class="bg-white p-4 font-glacial w-full h-full flex flex-col">
         <div class="flex-none mb-2 pb-2">
             <h2 class="text-center text-sm md:text-base md:[@media(min-height:800px)]:text-lg font-bold text-black uppercase tracking-wider">
-                DOMESTIC VIOLENCE ACCEPTANCE VS. HIGHER EDUCATION ATTAINMENT
+                DOMESTIC VIOLENCE ACCEPTANCE VS.<br class="block md:hidden" /> HIGHER EDUCATION ATTAINMENT
             </h2>
         </div>
         <div class="flex-1 min-h-0 relative">
@@ -48,6 +48,8 @@
         const values = data.values;
         const colors = data.colors;
 
+        const sizes = getImpactChartSizes();
+
         const trace = {
             x: categories,
             y: values,
@@ -60,7 +62,7 @@
             textposition: 'inside',
             insidetextanchor: 'middle',
             textfont: {
-                size: 30,
+                size: sizes.barText,
                 color: 'black',
                 family: 'glacial-indifference, sans-serif'
             },
@@ -73,19 +75,19 @@
             xaxis: {
                 title: {
                     text: '<b>Population with Higher Education (%)</b>',
-                    font: { family: 'glacial-indifference, sans-serif', size: 14, color: 'black' }
+                    font: { family: 'glacial-indifference, sans-serif', size: sizes.axisTitle, color: 'black' }
                 },
                 fixedrange: true,
-                tickfont: { color: 'black', size: 12 },
+                tickfont: { color: 'black', size: sizes.tickText },
                 showgrid: false
             },
             yaxis: {
                 title: {
                     text: '<b>Avg Violence Acceptance Rate</b>',
-                    font: { family: 'glacial-indifference, sans-serif', size: 14, color: 'black' }
+                    font: { family: 'glacial-indifference, sans-serif', size: sizes.axisTitle, color: 'black' }
                 },
                 fixedrange: true,
-                tickfont: { color: 'black', size: 12 },
+                tickfont: { color: 'black', size: sizes.tickText },
                 showgrid: false,
                 zeroline: false
             },
@@ -103,4 +105,32 @@
 
         Plotly.newPlot('impact-chart', [trace], layout, config);
     }
+
+    function getImpactChartSizes() {
+        const width = window.innerWidth;
+        const isSmall = width < 768;
+        const isMedium = width < 1024;
+        
+        return {
+            axisTitle: isSmall ? 10 : (isMedium ? 12 : 14),
+            tickText: isSmall ? 10 : 12,
+            barText: isSmall ? 16 : (isMedium ? 22 : 30)
+        };
+    }
+
+    window.addEventListener('resize', function() {
+        const sizes = getImpactChartSizes();
+        const updateLayout = {
+            'xaxis.title.font.size': sizes.axisTitle,
+            'yaxis.title.font.size': sizes.axisTitle,
+            'xaxis.tickfont.size': sizes.tickText,
+            'yaxis.tickfont.size': sizes.tickText
+        };
+        const updateTrace = {
+            'textfont.size': sizes.barText
+        };
+        
+        Plotly.relayout('impact-chart', updateLayout);
+        Plotly.restyle('impact-chart', updateTrace);
+    });
 </script>

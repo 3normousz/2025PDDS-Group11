@@ -39,14 +39,21 @@
             locationText = `IN ${region.toUpperCase()}`;
         }
 
+        const sizes = getEduResChartSizes();
+        let titleText = `<b>VIOLENCE ACCEPTANCE RATE OF WOMEN ${locationText}</b>`;
+        // Split title on small screens if it's long
+        if (window.innerWidth < 500) {
+             titleText = `<b>VIOLENCE ACCEPTANCE RATE OF WOMEN<br>${locationText}</b>`;
+        }
+
         const layout = {
           title: {
-            text: `<b>VIOLENCE ACCEPTANCE RATE OF WOMEN ${locationText}</b>`,
+            text: titleText,
             x: 0.5,
             xanchor: 'center',
             font: {
               family: "glacial-indifference, sans-serif",
-              size: 18,
+              size: sizes.title,
               color: "#ffffff",
             },
           },
@@ -55,7 +62,7 @@
               text: "",
               font: {
                 family: "glacial-indifference, sans-serif",
-                size: 14,
+                size: sizes.axisTitle,
                 color: "#ffffff",
               },
             },
@@ -74,7 +81,7 @@
               text: "",
               font: {
                 family: "glacial-indifference, sans-serif",
-                size: 14,
+                size: sizes.axisTitle,
                 color: "#ffffff",
               },
             },
@@ -92,7 +99,7 @@
           font: {
             family: "glacial-indifference, sans-serif",
             color: "white",
-            size: 14
+            size: sizes.tickText
           },
           legend: { 
               title: { text: "" },
@@ -103,7 +110,7 @@
                 color: "black",
             }
           },
-          margin: { t: 40, r: 20, b: 40, l: 40 },
+          margin: { t: sizes.marginTop, r: 20, b: 40, l: 40 },
         };
 
         const config = {
@@ -115,4 +122,28 @@
       })
       .catch((error) => console.error("Error:", error));
   };
+
+  function getEduResChartSizes() {
+        const width = window.innerWidth;
+        const isSmall = width < 768;
+        const isMedium = width < 1024;
+        
+        return {
+            title: isSmall ? 14 : (isMedium ? 15 : 18),
+            axisTitle: isSmall ? 12 : 14,
+            tickText: isSmall ? 10 : 14,
+            marginTop: width < 500 ? 60 : 40 // More margin for 2-line title
+        };
+    }
+
+    window.addEventListener('resize', function() {
+        const updateLayout = {
+            'title.font.size': sizes.title,
+            'xaxis.title.font.size': sizes.axisTitle,
+            'yaxis.title.font.size': sizes.axisTitle,
+            'font.size': sizes.tickText,
+            'margin.t': sizes.marginTop
+        };
+        Plotly.relayout('edu-residence-chart', updateLayout);
+    });
 </script>
