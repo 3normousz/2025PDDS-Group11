@@ -1,5 +1,10 @@
 <div class="h-full w-full">
   <div class="bg-transparent p-4 font-glacial w-full h-full flex flex-col text-white">
+    <div class="flex-none mb-2 pb-2">
+        <h2 id="edu-residence-title" class="text-center text-base md:text-lg md:[@media(min-height:800px)]:text-xl font-bold text-white uppercase tracking-wider leading-tight">
+            VIOLENCE ACCEPTANCE RATE OF WOMEN WORLDWIDE
+        </h2>
+    </div>
     <div class="flex-1 min-h-0 relative">
       <div id="edu-residence-chart" class="w-full h-full"></div>
     </div>
@@ -39,24 +44,15 @@
             locationText = `IN ${region.toUpperCase()}`;
         }
 
-        const sizes = getEduResChartSizes();
-        let titleText = `<b>VIOLENCE ACCEPTANCE RATE OF WOMEN ${locationText}</b>`;
-        // Split title on small screens if it's long
-        if (window.innerWidth < 500) {
-             titleText = `<b>VIOLENCE ACCEPTANCE RATE OF WOMEN<br>${locationText}</b>`;
+        // Update HTML title with responsive line break
+        const titleElement = document.getElementById('edu-residence-title');
+        if (titleElement) {
+            titleElement.innerHTML = `VIOLENCE ACCEPTANCE RATE OF WOMEN <br class="block md:hidden" />${locationText}`;
         }
 
+        const sizes = getEduResChartSizes();
+        
         const layout = {
-          title: {
-            text: titleText,
-            x: 0.5,
-            xanchor: 'center',
-            font: {
-              family: "glacial-indifference, sans-serif",
-              size: sizes.title,
-              color: "#ffffff",
-            },
-          },
           xaxis: {
             title: {
               text: "",
@@ -129,20 +125,17 @@
         const isMedium = width < 1024;
         
         return {
-            title: isSmall ? 14 : (isMedium ? 15 : 18),
-            axisTitle: isSmall ? 12 : 14,
-            tickText: isSmall ? 10 : 14,
-            marginTop: width < 500 ? 60 : 40 // More margin for 2-line title
+            axisTitle: isSmall ? 10 : (isMedium ? 12 : 14),
+            tickText: isSmall ? 10 : 12
         };
     }
 
     window.addEventListener('resize', function() {
+        const sizes = getEduResChartSizes();
         const updateLayout = {
-            'title.font.size': sizes.title,
             'xaxis.title.font.size': sizes.axisTitle,
             'yaxis.title.font.size': sizes.axisTitle,
-            'font.size': sizes.tickText,
-            'margin.t': sizes.marginTop
+            'font.size': sizes.tickText
         };
         Plotly.relayout('edu-residence-chart', updateLayout);
     });
