@@ -61,13 +61,14 @@
             text: values.map(v => '<b>' + Math.round(v) + '</b>'),
             textposition: 'inside',
             insidetextanchor: 'middle',
+            textangle: 0,
             textfont: {
                 size: sizes.barText,
                 color: 'black',
                 family: 'glacial-indifference, sans-serif'
             },
             width: 0.55,
-            hovertemplate: "%{x}<br>%{y}%<extra></extra>"
+            hovertemplate: "%{x}<br>%{y}%<extra></extra>",
         };
 
         const layout = {
