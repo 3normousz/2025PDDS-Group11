@@ -79,7 +79,7 @@
     };
 
     const layout = {
-      margin: { t: 10, r: 20, b: 40, l: 40 },
+      margin: { t: 10, r: 5, b: 60, l: 60 },
       xaxis: {
         title: {
           text: "<b>Population with Higher Education (%)</b>",
@@ -95,7 +95,7 @@
       },
       yaxis: {
         title: {
-          text: "<b>Avg Violence Acceptance Rate</b>",
+          text: sizes.yAxisTitle,
           font: {
             family: "glacial-indifference, sans-serif",
             size: sizes.axisTitle,
@@ -131,6 +131,10 @@
       axisTitle: isSmall ? 10 : isMedium ? 10 : 12,
       tickText: isSmall ? 10 : 12,
       barText: isSmall ? 10 : isMedium ? 14 : 20,
+      yAxisTitle:
+        isSmall || isMedium
+          ? "<b>Avg Violence<br>Acceptance Rate</b>"
+          : "<b>Avg Violence Acceptance Rate</b>",
     };
   }
 
@@ -139,6 +143,7 @@
     const updateLayout = {
       "xaxis.title.font.size": sizes.axisTitle,
       "yaxis.title.font.size": sizes.axisTitle,
+      "yaxis.title.text": sizes.yAxisTitle,
       "xaxis.tickfont.size": sizes.tickText,
       "yaxis.tickfont.size": sizes.tickText,
     };

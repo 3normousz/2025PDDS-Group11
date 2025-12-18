@@ -385,7 +385,7 @@ def education_impact_api():
         
         # Determine colors: Highlight "Low (<10%)" in purple
         # Male (grey #d1d0d0), Female (purple #bb99ff)
-        # Purple: #bb99ff, Grey: #d1d0d0
+        # Purple: #bb99ff, Grey: #d1d0d0d
         
         categories = group_avg["edu_group"].tolist()
         values = group_avg[value_col].tolist()
