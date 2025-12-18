@@ -223,7 +223,7 @@ function initHeatmap() {
           .html(
             `<strong>${countryName}</strong><br/>Violence Score: ${violenceData[
               countryName
-            ].score.toFixed(2)}%<br/>% Population Attained Higher Education: ${
+            ].score.toFixed(2)}%<br/>Higher Education Attainment: ${
               violenceData[countryName].edu
             }`
           );

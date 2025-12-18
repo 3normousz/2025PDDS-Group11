@@ -89,11 +89,29 @@ def world_heatmap_api():
         # Education level per country 
         country_edu = df.groupby('country')['%higher_edu_attained'].first()
         
+        def get_category(val):
+            if pd.isna(val): return "N/A"
+            
+            # Try numeric
+            try:
+                num_val = float(val)
+                if num_val < 10: return "Low"
+                elif num_val <= 25: return "Medium"
+                else: return "High"
+            except ValueError:
+                # String mapping
+                s_val = str(val).strip()
+                if s_val == "<10%": return "Low"
+                if s_val in ["10-25%", "10–25%"]: return "Medium"
+                if s_val == ">25%": return "High"
+                return s_val 
+
         data_dict = {}
         for country in country_scores.index:
+            raw_edu = country_edu.get(country, "N/A")
             data_dict[country] = {
                 "score": country_scores[country],
-                "edu": country_edu.get(country, "N/A")
+                "edu": get_category(raw_edu)
             }
         
         return jsonify(data_dict), 200
