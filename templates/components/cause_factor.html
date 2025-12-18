@@ -1,137 +1,152 @@
 <div class="h-full w-full">
-    <div class="bg-white p-4 font-glacial w-full h-full flex flex-col">
-        <div class="flex-none mb-2 pb-2">
-            <h2 class="text-center text-sm md:text-base md:[@media(min-height:800px)]:text-lg font-bold text-black uppercase tracking-wider">
-                DOMESTIC VIOLENCE ACCEPTANCE VS.<br class="block md:hidden" /> HIGHER EDUCATION ATTAINMENT
-            </h2>
-        </div>
-        <div class="flex-1 min-h-0 relative">
-            <div id="impact-chart" class="w-full h-full"></div>
-        </div>
+  <div class="bg-white p-4 mr-4 font-glacial h-full flex flex-col">
+    <div class="flex-none mb-2 pb-2">
+      <h2
+        class="text-center text-sm md:text-base md:[@media(min-height:800px)]:text-lg font-bold text-black uppercase tracking-wider"
+      >
+        DOMESTIC VIOLENCE ACCEPTANCE <br class="block" />
+        VS. HIGHER EDUCATION ATTAINMENT
+      </h2>
     </div>
+    <div class="flex-1 min-h-0 relative">
+      <div id="impact-chart" class="w-full h-full"></div>
+    </div>
+  </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initial fetch with default parameters
-        fetchData(window.currentRegion || "All Regions", window.currentCountry || "All Countries");
-    });
+  document.addEventListener("DOMContentLoaded", function () {
+    // Initial fetch with default parameters
+    fetchData(
+      window.currentRegion || "All Regions",
+      window.currentCountry || "All Countries"
+    );
+  });
 
-    // Expose update function globally
-    window.updateImpactChart = function(region, country) {
-        fetchData(region, country);
+  // Expose update function globally
+  window.updateImpactChart = function (region, country) {
+    fetchData(region, country);
+  };
+
+  function fetchData(region, country) {
+    let url = "/api/education-impact";
+    const params = new URLSearchParams();
+    if (region && region !== "All Regions") params.append("region", region);
+    if (country && country !== "All Countries")
+      params.append("country", country);
+
+    if (params.toString()) url += "?" + params.toString();
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          console.error("Error:", data.error);
+          return;
+        }
+        renderChart(data);
+      })
+      .catch((err) => console.error(err));
+  }
+
+  function renderChart(data) {
+    // Data format from API: { categories: [...], values: [...], colors: [...] }
+    const categories = data.categories;
+    const values = data.values;
+    const colors = data.colors;
+
+    const sizes = getImpactChartSizes();
+
+    const trace = {
+      x: categories,
+      y: values,
+      type: "bar",
+      marker: {
+        color: colors,
+        // cornerradius: 5
+      },
+      text: values.map((v) => "<b>" + Math.round(v) + "</b>"),
+      textposition: "inside",
+      insidetextanchor: "middle",
+      textangle: 0,
+      textfont: {
+        size: sizes.barText,
+        color: "black",
+        family: "glacial-indifference, sans-serif",
+      },
+      width: 0.55,
+      hovertemplate: "%{x}<br>%{y}%<extra></extra>",
     };
 
-    function fetchData(region, country) {
-        let url = '/api/education-impact';
-        const params = new URLSearchParams();
-        if (region && region !== "All Regions") params.append("region", region);
-        if (country && country !== "All Countries") params.append("country", country);
-        
-        if (params.toString()) url += "?" + params.toString();
+    const layout = {
+      margin: { t: 20, r: 40, b: 80, l: 80 },
+      xaxis: {
+        title: {
+          text: "<b>Population with Higher Education (%)</b>",
+          font: {
+            family: "glacial-indifference, sans-serif",
+            size: sizes.axisTitle,
+            color: "black",
+          },
+        },
+        fixedrange: true,
+        tickfont: { color: "black", size: sizes.tickText },
+        showgrid: false,
+      },
+      yaxis: {
+        title: {
+          text: "<b>Avg Violence Acceptance Rate</b>",
+          font: {
+            family: "glacial-indifference, sans-serif",
+            size: sizes.axisTitle,
+            color: "black",
+          },
+        },
+        fixedrange: true,
+        tickfont: { color: "black", size: sizes.tickText },
+        showgrid: false,
+        zeroline: false,
+      },
+      bargap: 0.15,
+      paper_bgcolor: "white",
+      plot_bgcolor: "white",
+      font: {
+        family: "glacial-indifference, sans-serif",
+        color: "black",
+      },
+      showlegend: false,
+    };
 
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error("Error:", data.error);
-                    return;
-                }
-                renderChart(data);
-            })
-            .catch(err => console.error(err));
-    }
+    const config = { responsive: true, displayModeBar: false };
 
-    function renderChart(data) {
-        // Data format from API: { categories: [...], values: [...], colors: [...] }
-        const categories = data.categories;
-        const values = data.values;
-        const colors = data.colors;
+    Plotly.newPlot("impact-chart", [trace], layout, config);
+  }
 
-        const sizes = getImpactChartSizes();
+  function getImpactChartSizes() {
+    const width = window.innerWidth;
+    const isSmall = width < 768;
+    const isMedium = width < 1024;
 
-        const trace = {
-            x: categories,
-            y: values,
-            type: 'bar',
-            marker: {
-                color: colors,
-                // cornerradius: 5
-            },
-            text: values.map(v => '<b>' + Math.round(v) + '</b>'),
-            textposition: 'inside',
-            insidetextanchor: 'middle',
-            textangle: 0,
-            textfont: {
-                size: sizes.barText,
-                color: 'black',
-                family: 'glacial-indifference, sans-serif'
-            },
-            width: 0.55,
-            hovertemplate: "%{x}<br>%{y}%<extra></extra>",
-        };
+    return {
+      axisTitle: isSmall ? 10 : isMedium ? 10 : 12,
+      tickText: isSmall ? 10 : 12,
+      barText: isSmall ? 16 : isMedium ? 22 : 30,
+    };
+  }
 
-        const layout = {
-            margin: { t: 20, r: 40, b: 80, l: 80 },
-            xaxis: {
-                title: {
-                    text: '<b>Population with Higher Education (%)</b>',
-                    font: { family: 'glacial-indifference, sans-serif', size: sizes.axisTitle, color: 'black' }
-                },
-                fixedrange: true,
-                tickfont: { color: 'black', size: sizes.tickText },
-                showgrid: false
-            },
-            yaxis: {
-                title: {
-                    text: '<b>Avg Violence Acceptance Rate</b>',
-                    font: { family: 'glacial-indifference, sans-serif', size: sizes.axisTitle, color: 'black' }
-                },
-                fixedrange: true,
-                tickfont: { color: 'black', size: sizes.tickText },
-                showgrid: false,
-                zeroline: false
-            },
-            bargap: 0.15,
-            paper_bgcolor: 'white',
-            plot_bgcolor: 'white',
-            font: {
-                family: 'glacial-indifference, sans-serif',
-                color: 'black'
-            },
-            showlegend: false
-        };
-        
-        const config = { responsive: true, displayModeBar: false };
+  window.addEventListener("resize", function () {
+    const sizes = getImpactChartSizes();
+    const updateLayout = {
+      "xaxis.title.font.size": sizes.axisTitle,
+      "yaxis.title.font.size": sizes.axisTitle,
+      "xaxis.tickfont.size": sizes.tickText,
+      "yaxis.tickfont.size": sizes.tickText,
+    };
+    const updateTrace = {
+      "textfont.size": sizes.barText,
+    };
 
-        Plotly.newPlot('impact-chart', [trace], layout, config);
-    }
-
-    function getImpactChartSizes() {
-        const width = window.innerWidth;
-        const isSmall = width < 768;
-        const isMedium = width < 1024;
-        
-        return {
-            axisTitle: isSmall ? 10 : (isMedium ? 10 : 12),
-            tickText: isSmall ? 10 : 12,
-            barText: isSmall ? 16 : (isMedium ? 22 : 30)
-        };
-    }
-
-    window.addEventListener('resize', function() {
-        const sizes = getImpactChartSizes();
-        const updateLayout = {
-            'xaxis.title.font.size': sizes.axisTitle,
-            'yaxis.title.font.size': sizes.axisTitle,
-            'xaxis.tickfont.size': sizes.tickText,
-            'yaxis.tickfont.size': sizes.tickText
-        };
-        const updateTrace = {
-            'textfont.size': sizes.barText
-        };
-        
-        Plotly.relayout('impact-chart', updateLayout);
-        Plotly.restyle('impact-chart', updateTrace);
-    });
+    Plotly.relayout("impact-chart", updateLayout);
+    Plotly.restyle("impact-chart", updateTrace);
+  });
 </script>
