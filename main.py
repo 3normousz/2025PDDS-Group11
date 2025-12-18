@@ -83,12 +83,18 @@ def world_heatmap_api():
     try:
         df = pd.read_csv(dataset_path)
         
-        country_data = df[df['value'].notna()].groupby('country')['value'].mean().reset_index()
-        country_data.columns = ['Country', 'Average_Violence_Score']
+        # Average violence score per country
+        country_scores = df[df['value'].notna()].groupby('country')['value'].mean()
+        
+        # Education level per country 
+        country_edu = df.groupby('country')['%higher_edu_attained'].first()
         
         data_dict = {}
-        for _, row in country_data.iterrows():
-            data_dict[row['Country']] = row['Average_Violence_Score']
+        for country in country_scores.index:
+            data_dict[country] = {
+                "score": country_scores[country],
+                "edu": country_edu.get(country, "N/A")
+            }
         
         return jsonify(data_dict), 200
     
@@ -116,7 +122,6 @@ def countries_api():
         
         # If no region or invalid region, return all countries
         # We can get all countries from the CSV or just flatten the map
-        # Let's use the CSV to be accurate about what data we have
         df = pd.read_csv(dataset_path)
         countries = sorted(df['country'].unique().tolist())
         return jsonify(countries), 200
@@ -142,7 +147,6 @@ def reason_gender_api():
                 countries_in_region = REGION_MAP[region]
                 df = df[df['country'].isin(countries_in_region)]
             elif region == "Other":
-                 # Logic for 'Other' if needed, or just ignore if not strictly required
                  pass
 
         df['Reason'] = df['question'].astype(str).str.strip()
@@ -255,6 +259,17 @@ def edu_residence_api():
         EDU_ORDER = ["No education", "Primary", "Secondary", "Higher"]
         gender_map = {"F": "Female", "M": "Male"}
 
+        # Filter by Region/Country
+        region = request.args.get('region')
+        country = request.args.get('country')
+
+        if country and country != "All Countries" and country != "null":
+            df = df[df['country'] == country]
+        elif region and region != "All Regions" and region != "null":
+            if region in REGION_MAP:
+                countries_in_region = REGION_MAP[region]
+                df = df[df['country'].isin(countries_in_region)]
+
         # Filter for Education data
         edu = df[df['demo_question'] == "Education"].copy()
         
@@ -265,7 +280,7 @@ def edu_residence_api():
         edu['value'] = pd.to_numeric(edu['value'], errors='coerce')
         edu = edu.dropna(subset=['value', 'gender'])
 
-        # Group by Education and Gender (Worldwide average)
+        # Group by Education and Gender
         plot_df = (
             edu.groupby(['demo_response', 'gender'])['value']
             .mean()
@@ -283,7 +298,8 @@ def edu_residence_api():
 
         # Prepare traces
         traces = []
-        colors = {"Female": "#9b14be", "Male": "#decdff"}
+        # Male (grey #d1d0d0), Female (purple #bb99ff)
+        colors = {"Female": "#bb99ff", "Male": "#d1d0d0"}
         
         for gender in ["Female", "Male"]:
             gender_data = plot_df[plot_df['gender'] == gender]
@@ -367,20 +383,22 @@ def education_impact_api():
             .reset_index()
         )
         
-        # Determine colors: Highlight the MIN value (High Education usually has lower acceptance)
-        # Logic from new new code.py: min_val = group_avg[value_col].min()
-        # colors = ["#B9A6FF" if v == min_val else "#D5D3D2" for v in group_avg[value_col]]
+        # Determine colors: Highlight "Low (<10%)" in purple
+        # Male (grey #d1d0d0), Female (purple #bb99ff)
+        # Purple: #bb99ff, Grey: #d1d0d0
         
-        # Ensure the logic is robust if data is missing
+        categories = group_avg["edu_group"].tolist()
         values = group_avg[value_col].tolist()
-        if values:
-            min_val = min(values)
-            colors = ["#bb99ff" if v == min_val else "#d1d0d0" for v in values]
-        else:
-            colors = []
+        
+        colors = []
+        for cat in categories:
+            if "Low" in str(cat):
+                colors.append("#bb99ff")
+            else:
+                colors.append("#d1d0d0")
 
         result = {
-            "categories": group_avg["edu_group"].tolist(),
+            "categories": categories,
             "values": values,
             "colors": colors
         }

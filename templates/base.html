@@ -11,27 +11,29 @@
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   </head>
 
-  <body class="w-full flex flex-col min-h-screen lg:h-screen lg:overflow-hidden font-glacial">
+  <body
+    class="w-full flex flex-col min-h-screen lg:h-screen lg:overflow-hidden font-glacial bg-[#0a015b]"
+  >
     <!-- Top Section -->
     <div class="bg-[#0a015b] text-white flex-none w-full flex flex-col">
-        <!-- Header -->
-        <div class="text-center py-1 font-bold text-sm md:text-sm md:[@media(min-height:800px)]:text-lg uppercase tracking-wider">
-            Domestic Violence Against Women Dashboard
-        </div>
-        <!-- Hook -->
-        <div class="w-full pb-2">
-            {% block top_content %}{% endblock %}
-        </div>
+      <!-- Header -->
+      <div
+        class="text-center py-1 font-bold text-base md:text-base md:[@media(min-height:800px)]:text-lg uppercase tracking-wider"
+      >
+        Domestic Violence Against Women Dashboard
+      </div>
+      <!-- Hook -->
+      <div class="w-full pb-2">{% block top_content %}{% endblock %}</div>
     </div>
 
     <!-- Middle Section -->
     <div class="bg-white text-black w-full lg:flex-1 lg:min-h-0">
-        {% block middle_content %}{% endblock %}
+      {% block middle_content %}{% endblock %}
     </div>
 
     <!-- Bottom Section -->
     <div class="bg-[#0a015b] text-white w-full lg:flex-1 lg:min-h-0">
-        {% block bottom_content %}{% endblock %}
+      {% block bottom_content %}{% endblock %}
     </div>
   </body>
 </html>

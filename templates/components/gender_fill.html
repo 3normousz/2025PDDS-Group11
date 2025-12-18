@@ -1,6 +1,6 @@
 <div class="h-full w-full">
   <div
-    class="bg-[#0f0475] p-4 font-glacial w-full h-full flex flex-col text-white"
+    class="bg-[#0f0475] p-2 font-glacial w-full h-full flex flex-col text-white"
   >
     <!--
         <div class="flex-none flex flex-row justify-end items-center mb-2 pb-2">
@@ -19,14 +19,14 @@
     <div class="flex-1 min-h-0 flex flex-col overflow-hidden">
       <!-- Heads Box (Right) -->
       <div
-        class="w-full flex-1 flex justify-center items-center space-x-2 md:space-x-12 min-h-0"
+        class="w-full flex-1 flex justify-center items-center space-x-2 md:space-x-4 min-h-0"
       >
         <!-- Male Head -->
         <div
-          class="flex flex-col items-center p-1 md:p-2 h-full justify-center min-w-0"
+          class="flex flex-col items-center p-0 h-full justify-center min-w-0"
         >
           <svg
-            class="w-auto h-full max-w-full max-h-[200px] md:max-h-[250px]"
+            class="w-auto h-full max-w-full max-h-[340px] md:max-h-[425px]"
             viewBox="0 0 375 375"
             xmlns="http://www.w3.org/2000/svg"
           >
@@ -71,10 +71,10 @@
 
         <!-- Female Head -->
         <div
-          class="flex flex-col items-center p-1 md:p-2 h-full justify-center min-w-0"
+          class="flex flex-col items-center p-0 h-full justify-center min-w-0"
         >
           <svg
-            class="w-auto h-full max-w-full max-h-[200px] md:max-h-[250px]"
+            class="w-auto h-full max-w-full max-h-[340px] md:max-h-[425px]"
             viewBox="0 0 375 375"
             xmlns="http://www.w3.org/2000/svg"
           >
@@ -234,7 +234,7 @@
       }
 
       if (diff > 0) {
-        text = `${locationText}, <span class="font-bold text-purple-300">women show ${diff}% higher</span> acceptance towards domestic violence than men`;
+        text = `${locationText}, <span class="font-bold text-purple-300 ">women show ${diff}% higher</span> acceptance towards domestic violence than men`;
       } else if (diff < 0) {
         text = `${locationText}, <span class="font-bold text-blue-300">men show ${Math.abs(
           diff

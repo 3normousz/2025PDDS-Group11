@@ -1,13 +1,11 @@
 <div class="h-full w-full">
-  <div
-    class="bg-[#0f0475] p-4 mr-4 font-glacial h-full flex flex-col text-white"
-  >
+  <div class="bg-[#0f0475] p-4 font-glacial h-full flex flex-col text-white">
     <div class="flex-none mb-2 pb-2">
       <h2
         id="edu-residence-title"
         class="text-center text-base md:text-base md:[@media(min-height:800px)]:text-xl font-bold text-white uppercase tracking-wider leading-tight"
       >
-        VIOLENCE ACCEPTANCE RATE OF WOMEN WORLDWIDE
+        VIOLENCE ACCEPTANCE RATE WORLDWIDE
       </h2>
     </div>
     <div class="flex-1 min-h-0 relative">
@@ -60,7 +58,7 @@
         // Update HTML title with responsive line break
         const titleElement = document.getElementById("edu-residence-title");
         if (titleElement) {
-          titleElement.innerHTML = `VIOLENCE ACCEPTANCE RATE OF WOMEN <br class="block md:hidden" />${locationText}`;
+          titleElement.innerHTML = `VIOLENCE ACCEPTANCE RATE <br class="block md:hidden" />${locationText}`;
         }
 
         const sizes = getEduResChartSizes();

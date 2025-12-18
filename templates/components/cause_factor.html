@@ -1,5 +1,5 @@
 <div class="h-full w-full">
-  <div class="bg-white p-4 mr-4 font-glacial h-full flex flex-col">
+  <div class="bg-white p-4 font-glacial h-full flex flex-col">
     <div class="flex-none mb-2 pb-2">
       <h2
         class="text-center text-sm md:text-base md:[@media(min-height:800px)]:text-lg font-bold text-black uppercase tracking-wider"
@@ -79,7 +79,7 @@
     };
 
     const layout = {
-      margin: { t: 20, r: 40, b: 80, l: 80 },
+      margin: { t: 10, r: 20, b: 40, l: 40 },
       xaxis: {
         title: {
           text: "<b>Population with Higher Education (%)</b>",
@@ -130,7 +130,7 @@
     return {
       axisTitle: isSmall ? 10 : isMedium ? 10 : 12,
       tickText: isSmall ? 10 : 12,
-      barText: isSmall ? 16 : isMedium ? 22 : 30,
+      barText: isSmall ? 10 : isMedium ? 14 : 20,
     };
   }
 
