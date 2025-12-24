@@ -36,11 +36,11 @@ instance/
 .env.*
 
 # SQLite database files
-*.sqlite3
-*.sqlite
-*.db
-*.db-journal
-*.sqlite-journal
+#*.sqlite3
+#*.sqlite
+#*.db
+#*.db-journal
+#*.sqlite-journal
 
 # Logs
 *.log
