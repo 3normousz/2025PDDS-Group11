@@ -222,12 +222,15 @@
         displayReason.charAt(0).toLowerCase() + displayReason.slice(1);
 
       // Determine location text
-      let locationText = "Worldwide";
+      let locationText = "Countries";
+      let isSpecificCountry = false;
+
       if (
         typeof window.currentCountry !== "undefined" &&
         window.currentCountry !== "All Countries"
       ) {
         locationText = `In ${window.currentCountry}`;
+        isSpecificCountry = true;
       } else if (
         typeof window.currentRegion !== "undefined" &&
         window.currentRegion !== "All Regions"
@@ -237,7 +240,8 @@
 
       // Determine education text
       let eduText = "";
-      if (typeof window.currentEduLevel !== "undefined") {
+      // Only show edu text if NOT a specific country
+      if (!isSpecificCountry && typeof window.currentEduLevel !== "undefined") {
         if (window.currentEduLevel === "Low")
           eduText = " with low level of higher education attainment";
         else if (window.currentEduLevel === "Medium")

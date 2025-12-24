@@ -146,10 +146,28 @@
       country === "All Countries" ? "Country" : country;
     document.getElementById("country-dropdown").classList.add("hidden");
 
+    // Reset Education Level to "All Levels" if a specific country is selected
+    // This prevents the chart from going empty if the country's edu level doesn't match the filter
+    if (country !== "All Countries") {
+      window.currentEduLevel = "All Levels";
+      document.getElementById("edu-btn-text").textContent =
+        "All levels of higher edu. attainment";
+    }
+
     updateCharts();
   }
 
   function selectEduLevel(label) {
+    // If a specific country is selected, force "All Levels" regardless of selection
+    if (window.currentCountry && window.currentCountry !== "All Countries") {
+      window.currentEduLevel = "All Levels";
+      document.getElementById("edu-btn-text").textContent =
+        "All levels of higher edu. attainment";
+      document.getElementById("edu-dropdown").classList.add("hidden");
+      updateCharts();
+      return;
+    }
+
     // Map visible label to internal value expected by APIs
     let value = "All Levels";
     const lowerLabel = label ? label.toLowerCase() : "";
