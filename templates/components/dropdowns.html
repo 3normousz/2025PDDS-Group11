@@ -1,11 +1,44 @@
 <div class="flex flex-wrap justify-center gap-4 mt-2">
+  <!-- Education Level Dropdown (moved first) -->
+  <div class="relative inline-block text-left">
+    <button
+      type="button"
+      id="edu-btn"
+      onclick="toggleDropdown('edu-dropdown')"
+      class="inline-flex justify-between items-center w-56 px-4 py-1 bg-[#0a015b] border border-white text-white font-bold text-sm lg:[@media(min-height:800px)]:text-base uppercase tracking-wider hover:bg-white/10 focus:outline-none"
+    >
+      <span class="truncate" id="edu-btn-text"
+        >All levels of higher edu. attainment</span
+      >
+      <svg
+        class="-mr-1 ml-2 h-5 w-5 fill-current text-[#bb99ff] shrink-0"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </button>
+    <div
+      id="edu-dropdown"
+      class="hidden absolute left-0 mt-1 w-56 bg-[#0a015b] border border-white shadow-lg z-50 text-white"
+    >
+      <div class="py-1 max-h-60 overflow-y-auto" id="edu-list">
+        <!-- Education levels will be here -->
+      </div>
+    </div>
+  </div>
+
   <!-- Region Dropdown -->
   <div class="relative inline-block text-left">
     <button
       type="button"
       id="region-btn"
       onclick="toggleDropdown('region-dropdown')"
-      class="inline-flex justify-between items-center w-40 px-4 py-1 bg-[#0a015b] border border-white text-white font-bold text-sm lg:[@media(min-height:800px)]:text-base  uppercase tracking-wider hover:bg-white/10 focus:outline-none"
+      class="inline-flex justify-between items-center w-40 px-4 py-1 bg-[#0a015b] border border-white text-white font-bold text-sm lg:[@media(min-height:800px)]:text-base uppercase tracking-wider hover:bg-white/10 focus:outline-none"
     >
       <span class="truncate" id="region-btn-text">Region</span>
       <!-- Dropdown Arrow -->
@@ -68,6 +101,7 @@
   // Global state
   window.currentRegion = "All Regions";
   window.currentCountry = "All Countries";
+  window.currentEduLevel = "All Levels";
 
   function toggleDropdown(id) {
     const dropdown = document.getElementById(id);
@@ -76,6 +110,7 @@
     // Close all dropdowns first
     document.getElementById("region-dropdown").classList.add("hidden");
     document.getElementById("country-dropdown").classList.add("hidden");
+    document.getElementById("edu-dropdown").classList.add("hidden");
 
     if (isHidden) {
       dropdown.classList.remove("hidden");
@@ -87,6 +122,7 @@
     if (!e.target.closest(".relative")) {
       document.getElementById("region-dropdown").classList.add("hidden");
       document.getElementById("country-dropdown").classList.add("hidden");
+      document.getElementById("edu-dropdown").classList.add("hidden");
     }
   });
 
@@ -113,20 +149,56 @@
     updateCharts();
   }
 
-  function updateCharts() {
-    // Only update the 3rd (Gender Diff) and 4th (Edu Diff) graphs
+  function selectEduLevel(label) {
+    // Map visible label to internal value expected by APIs
+    let value = "All Levels";
+    const lowerLabel = label ? label.toLowerCase() : "";
 
-    // 4th Graph: Edu Residence Chart
-    if (window.updateEduResidenceChart) {
-      window.updateEduResidenceChart(
-        window.currentRegion,
-        window.currentCountry
-      );
+    if (lowerLabel.startsWith("all")) {
+      value = "All Levels";
+    } else if (lowerLabel.startsWith("low")) {
+      value = "Low";
+    } else if (lowerLabel.startsWith("medium")) {
+      value = "Medium";
+    } else if (lowerLabel.startsWith("high")) {
+      value = "High";
     }
+
+    window.currentEduLevel = value;
+    // Show the full phrase on the button
+    document.getElementById("edu-btn-text").textContent = label;
+    document.getElementById("edu-dropdown").classList.add("hidden");
+
+    // Debug logging to help verify frontend behavior
+    try {
+      console.log("selectEduLevel -> label:", label, "mapped:", value);
+    } catch (e) {}
+
+    updateCharts();
+  }
+
+  function updateCharts() {
+    // Only update the 3rd (Gender Diff) graph
+    // The user requested that the 4th graph (Edu Residence) should NOT be affected by this filter.
 
     // 3rd Graph: Gender Diff
     if (window.updateGenderChart) {
-      window.updateGenderChart(window.currentRegion, window.currentCountry);
+      window.updateGenderChart(
+        window.currentRegion,
+        window.currentCountry,
+        window.currentEduLevel || "All Levels"
+      );
+    }
+
+    // 4th Graph: Edu Residence Chart
+    // We still update it for Region/Country changes, but we pass "All Levels" for the edu filter
+    // to ensure it ignores the education attainment filter as requested.
+    if (window.updateEduResidenceChart) {
+      window.updateEduResidenceChart(
+        window.currentRegion,
+        window.currentCountry,
+        "All Levels"
+      );
     }
   }
 
@@ -193,5 +265,19 @@
   document.addEventListener("DOMContentLoaded", function () {
     fetchRegions();
     fetchCountries();
+    // Populate education levels (visible phrases)
+    const eduList = document.getElementById("edu-list");
+    eduList.innerHTML = "";
+    addOption(eduList, "All levels of higher edu. attainment", selectEduLevel);
+    addOption(eduList, "Low level of higher edu. attainment", selectEduLevel);
+    addOption(
+      eduList,
+      "Medium level of higher edu. attainment",
+      selectEduLevel
+    );
+    addOption(eduList, "High level of higher edu. attainment", selectEduLevel);
+
+    // init global (internal value)
+    window.currentEduLevel = "All Levels";
   });
 </script>

@@ -4,14 +4,12 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from fractions import Fraction
+import db_utils
 
 app = Flask(__name__, static_folder='static')
 
 # Fonts path, you can just directly refer to this in your Plotly
 glacial_indifference = os.path.join(os.getcwd(), "assets/fonts/", "GlacialIndifference-Regular.otf")
-
-# Dataset path
-dataset_path = os.path.join(os.getcwd(), "data/makeovermonday-2020w10/", "violence_data.csv")
 
 REGION_MAP = {
     "Africa": [
@@ -41,7 +39,7 @@ REGION_MAP = {
 @app.route("/")
 def index():
     try:
-        df = pd.read_csv(dataset_path)
+        df = db_utils.get_data()
 
         # Filter for Women and the specific question
         mask_question = df['question'].astype(str).str.strip() == '... for at least one specific reason'
@@ -81,7 +79,7 @@ def reason_gender_page():
 @app.route("/api/world-heatmap")
 def world_heatmap_api():
     try:
-        df = pd.read_csv(dataset_path)
+        df = db_utils.get_data()
         
         # Average violence score per country
         country_scores = df[df['value'].notna()].groupby('country')['value'].mean()
@@ -140,7 +138,7 @@ def countries_api():
         
         # If no region or invalid region, return all countries
         # We can get all countries from the CSV or just flatten the map
-        df = pd.read_csv(dataset_path)
+        df = db_utils.get_data()
         countries = sorted(df['country'].unique().tolist())
         return jsonify(countries), 200
 
@@ -150,13 +148,14 @@ def countries_api():
 @app.route("/api/reason-gender")
 def reason_gender_api():
     try:
-        df = pd.read_csv(dataset_path)
+        df = db_utils.get_data()
 
         df = df[df['value'].notna()].copy()
 
         # Filter by Region/Country
         region = request.args.get('region')
         country = request.args.get('country')
+        edu_level = request.args.get('edu_level')
 
         if country and country != "All Countries" and country != "null":
             df = df[df['country'] == country]
@@ -166,6 +165,9 @@ def reason_gender_api():
                 df = df[df['country'].isin(countries_in_region)]
             elif region == "Other":
                  pass
+        
+        if edu_level and edu_level != "All Levels":
+            df = df[df['%higher_edu_attained'].str.contains(edu_level, case=False, na=False)]
 
         df['Reason'] = df['question'].astype(str).str.strip()
 
@@ -196,7 +198,7 @@ def reason_gender_api():
 @app.route("/api/locations")
 def locations_api():
     try:
-        df = pd.read_csv(dataset_path)
+        df = db_utils.get_data()
         countries = df['country'].unique().tolist()
         
         # Identify countries not in any region and add them to "Other"
@@ -218,7 +220,7 @@ def locations_api():
 @app.route("/api/impact-data")
 def impact_data_api():
     try:
-        df = pd.read_csv(dataset_path)
+        df = db_utils.get_data()
         
         # Compute impact and sort descending
         def compute_impact_sorted(selected_country):
@@ -272,7 +274,7 @@ def impact_data_api():
 @app.route("/api/edu-residence")
 def edu_residence_api():
     try:
-        df = pd.read_csv(dataset_path)
+        df = db_utils.get_data()
         
         EDU_ORDER = ["No education", "Primary", "Secondary", "Higher"]
         gender_map = {"F": "Female", "M": "Male"}
@@ -280,6 +282,7 @@ def edu_residence_api():
         # Filter by Region/Country
         region = request.args.get('region')
         country = request.args.get('country')
+        edu_level = request.args.get('edu_level')
 
         if country and country != "All Countries" and country != "null":
             df = df[df['country'] == country]
@@ -287,6 +290,9 @@ def edu_residence_api():
             if region in REGION_MAP:
                 countries_in_region = REGION_MAP[region]
                 df = df[df['country'].isin(countries_in_region)]
+        
+        if edu_level and edu_level != "All Levels":
+            df = df[df['%higher_edu_attained'].str.contains(edu_level, case=False, na=False)]
 
         # Filter for Education data
         edu = df[df['demo_question'] == "Education"].copy()
@@ -342,7 +348,7 @@ def edu_residence_api():
 @app.route("/api/education-impact")
 def education_impact_api():
     try:
-        df = pd.read_csv(dataset_path)
+        df = db_utils.get_data()
         
         # Filter by Region/Country
         region = request.args.get('region')
@@ -379,12 +385,16 @@ def education_impact_api():
                 labels=["Low (<10%)", "Medium (10–25%)", "High (>25%)"]
             )
         else:
-            # Categorical case
             mapping = {
+                # Fallback mappings (CSV version)
                 "<10%": "Low (<10%)",
                 "10-25%": "Medium (10–25%)",
                 ">25%": "High (>25%)",
-                "10–25%": "Medium (10–25%)"
+                "10–25%": "Medium (10–25%)",
+                # Database version mappings
+                "Low (<10%)": "Low (<10%)",
+                "Medium (10-25%)": "Medium (10–25%)",
+                "High (>25%)": "High (>25%)"
             }
             df["edu_group"] = df[edu_col].astype(str).str.strip().map(mapping)
 

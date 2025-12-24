@@ -145,16 +145,18 @@
     // });
 
     // Expose update function
-    window.updateGenderChart = function (region, country) {
-      fetchGenderData(region, country);
+    window.updateGenderChart = function (region, country, eduLevel) {
+      fetchGenderData(region, country, eduLevel);
     };
 
-    function fetchGenderData(region, country) {
+    function fetchGenderData(region, country, eduLevel) {
       let url = "/api/reason-gender";
       const params = new URLSearchParams();
       if (region && region !== "All Regions") params.append("region", region);
       if (country && country !== "All Countries")
         params.append("country", country);
+      if (eduLevel && eduLevel !== "All Levels")
+        params.append("edu_level", eduLevel);
 
       if (params.toString()) url += "?" + params.toString();
 
@@ -233,14 +235,27 @@
         locationText = `In ${window.currentRegion}`;
       }
 
+      // Determine education text
+      let eduText = "";
+      if (typeof window.currentEduLevel !== "undefined") {
+        if (window.currentEduLevel === "Low")
+          eduText = " with low level of higher education attainment";
+        else if (window.currentEduLevel === "Medium")
+          eduText = " with medium level of higher education attainment";
+        else if (window.currentEduLevel === "High")
+          eduText = " with high level of higher education attainment";
+        else if (window.currentEduLevel === "All Levels")
+          eduText = " across all levels of higher education attainment";
+      }
+
       if (diff > 0) {
-        text = `${locationText}, <span class="font-bold text-purple-300 ">women show ${diff}% higher</span> acceptance towards domestic violence than men`;
+        text = `${locationText}${eduText}, <span class="font-bold text-purple-300 ">women show ${diff}% higher</span> acceptance towards domestic violence than men`;
       } else if (diff < 0) {
-        text = `${locationText}, <span class="font-bold text-blue-300">men show ${Math.abs(
+        text = `${locationText}${eduText}, <span class="font-bold text-blue-300">men show ${Math.abs(
           diff
         )}% higher</span> acceptance towards domestic violence than women`;
       } else {
-        text = `${locationText}, men and women show <span class="font-bold text-gray-300">equal</span> acceptance towards domestic violence`;
+        text = `${locationText}${eduText}, men and women show <span class="font-bold text-gray-300">equal</span> acceptance towards domestic violence`;
       }
 
       analysisText.innerHTML = text;

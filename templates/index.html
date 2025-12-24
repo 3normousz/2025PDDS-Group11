@@ -31,29 +31,29 @@
 
   <!-- Row 2 Grid -->
   <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-4 px-4">
-    <!-- Gender Diff Text (Width 2) -->
-    <div
-      class="lg:col-span-2 h-auto min-h-[200px] lg:h-full min-w-0 overflow-hidden"
-    >
-      {% include 'components/gender_diff_text.html' %}
+    <!-- Combined Gender Block (Width 5) -->
+    <div class="lg:col-span-5 h-auto lg:h-full min-h-0 min-w-0 overflow-hidden">
+      <div class="h-full w-full flex flex-col lg:flex-row">
+        <div class="w-full lg:w-2/5 h-auto lg:h-full overflow-hidden">
+          {% include 'components/gender_diff_text.html' %}
+        </div>
+        <div class="w-full lg:w-3/5 h-[300px] lg:h-full overflow-hidden">
+          {% include 'components/gender_fill.html' %}
+        </div>
+      </div>
     </div>
-    <!-- Viz 03: Gender Diff Chart (Width 3) -->
-    <div
-      class="lg:col-span-3 h-[400px] lg:h-full min-h-0 min-w-0 overflow-hidden"
-    >
-      {% include 'components/gender_fill.html' %}
-    </div>
-    <!-- Edu Matters (Width 2) -->
-    <div
-      class="lg:col-span-2 h-auto min-h-[200px] lg:h-full min-w-0 overflow-hidden flex items-center justify-center"
-    >
-      {% include 'components/education_text.html' %}
-    </div>
-    <!-- Viz 04: Edu Diff (Width 5) -->
-    <div
-      class="lg:col-span-5 h-[400px] lg:h-full min-h-0 min-w-0 overflow-hidden"
-    >
-      {% include 'components/edu_residence_chart.html' %}
+    <!-- Combined Education Block (Width 7) -->
+    <div class="lg:col-span-7 h-auto lg:h-full min-h-0 min-w-0 overflow-hidden">
+      <div class="h-full w-full flex flex-col lg:flex-row">
+        <div
+          class="w-full lg:w-2/7 h-auto lg:h-full overflow-hidden flex items-center justify-center"
+        >
+          {% include 'components/education_text.html' %}
+        </div>
+        <div class="w-full lg:w-5/7 h-[300px] lg:h-full overflow-hidden">
+          {% include 'components/edu_residence_chart.html' %}
+        </div>
+      </div>
     </div>
   </div>
 </div>

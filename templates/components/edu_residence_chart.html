@@ -23,12 +23,14 @@
     );
   });
 
-  window.updateEduResidenceChart = function (region, country) {
+  window.updateEduResidenceChart = function (region, country, eduLevel) {
     let url = "/api/edu-residence?t=" + new Date().getTime();
     if (region && region !== "All Regions")
       url += `&region=${encodeURIComponent(region)}`;
     if (country && country !== "All Countries")
       url += `&country=${encodeURIComponent(country)}`;
+    if (eduLevel && eduLevel !== "All Levels")
+      url += `&edu_level=${encodeURIComponent(eduLevel)}`;
 
     fetch(url)
       .then((response) => response.json())
@@ -94,7 +96,7 @@
             },
             // range: [0, 40],
             rangemode: "tozero",
-            dtick: 10,
+            // dtick: 10,
             fixedrange: true,
             showgrid: true,
             gridcolor: "#444",
